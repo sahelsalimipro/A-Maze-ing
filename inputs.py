@@ -4,25 +4,6 @@ import sys
 
 from globals import COMMAND_TABLE, INPUT_COMMAND
 
-def recolor() -> None:
-    pass
-
-def toggle_solve() -> None:
-    pass
-
-def regenerate() -> None:
-    pass
-
-def new_seed() -> None:
-    pass
-
-def toggle_theme() -> None:
-    pass
-
-def change_theme() -> None:
-    pass
-
-
 
 def is_command(value: str) -> TypeGuard[INPUT_COMMAND]:
     return value in COMMAND_TABLE

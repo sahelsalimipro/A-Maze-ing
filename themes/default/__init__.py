@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
-from drawers import EmptyDrawer
+from drawers import EmptyDrawer, MenuDrawer
 from ._drawers import BaseDrawer, BannerDrawer, DefaultMazeDrawer
 from amazeing import Maze
 if TYPE_CHECKING:
@@ -33,5 +33,5 @@ def register(config: dict[str, Any], maze: Maze) -> dict[str, Drawer]:
         "banner" : BannerDrawer(config),
         "maze" : DefaultMazeDrawer(maze, config),
         "padd-bottom" : BaseDrawer(padd_bot_bg_clr),
-        "menu" : BaseDrawer((0, 0, 0))
+        "menu" : MenuDrawer()
     }

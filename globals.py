@@ -1,10 +1,8 @@
 from os import get_terminal_size, terminal_size
-from typing import Literal, TYPE_CHECKING
+from typing import Literal
 
 from commands import Command
-
-if TYPE_CHECKING:
-    from inputs import recolor, toggle_solve, regenerate, new_seed, toggle_theme, change_theme
+from input_commands import recolor, toggle_solve, regenerate, new_seed, toggle_theme, change_theme
 
 # ----------   Rendering   ---------- #
 FPS: int = 12
