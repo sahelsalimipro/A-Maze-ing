@@ -1,0 +1,70 @@
+import logging
+from random import Random
+
+from tiles import BaseTile, Tile, Limit
+from dirs import DELTAS
+from carve import pick_endpoints, wilson
+from solvers import astar
+
+logger = logging.getLogger(__name__)
+
+class Maze():
+    def __init__(self, dimensions: tuple[int, int], seed: float) -> None:
+        self.dimensions = dimensions
+        self.width = dimensions[0]
+        self.height = dimensions[1]
+
+        self.seed = seed
+        self.grid = self._build_grid()
+        self._rng = Random(seed)
+        self._start, self._goal = pick_endpoints(self)
+        self._carve(8) #TODO implement loop_chance
+
+        return
+
+    def _build_grid(self) -> list[list[BaseTile]]:
+
+        max_x = self.width +1
+        max_y = self.height + 1
+
+        def _wire_neighbours(rows: list[list[BaseTile]]) -> None:
+            # for each row
+            for r in rows:
+                # for each column/tile
+                for tile in r:
+                    # link in every direction
+                    for dir, (dx, dy) in DELTAS.items():
+                       nx, ny = tile.x + dx, tile.y + dy
+
+                       if 0 <= nx <= max_x and 0 <= ny <= max_y:
+                           tile.neighbours[dir] = rows[ny][nx]
+
+
+        def is_edge(x, y) -> bool:
+            return x == 0 or x == max_x or y == 0 or y == max_y
+
+
+        rows: list[list[BaseTile]] = []
+        for y in range(max_y + 1):
+            row: list[BaseTile] = []
+            for x in range(max_x + 1):
+                if is_edge(x, y):
+                    row.append(Limit((x,y), self))
+                else :
+                    row.append(Tile((x,y), self))
+            rows.append(row)
+
+        _wire_neighbours(rows)
+        return rows
+
+    def _carve(self, loop_chance: float) -> None:
+        return wilson(self, self._start, loop_chance)
+
+    def resolve(self) -> None:
+        path: list[BaseTile] | None = astar(self._start, self._goal)
+        if path is None:
+            logger.error("Created maze without a solution")
+            raise ValueError("No path between starting point and end point")
+        for t in path:
+            t.isSolution = True
+        return

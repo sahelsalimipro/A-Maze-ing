@@ -1,0 +1,10 @@
+- calculate dimensions of regions
+	- Need to find how to calculate the maze buffer with tile ratios
+- region gives buffer to drawer
+- drawer prepares buffer for rendering
+	- Need to make the buffer of the Maze capable of handeling uneven ratios and displaying the center correctly when the tile is marked.
+- render every frame
+- resolve maze
+- menu + options + capt user input
+
+Amen, and to Armaggedon!

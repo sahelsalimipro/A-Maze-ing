@@ -1,0 +1,33 @@
+
+[Sahel/Basile]
+- ajouter seed/loop_chance parametres.
+- validation parametres
+- Logo 42
+- Tester les animations
+- Readme + License
+- ajouter entry/exit manuel
+- MazeGenerator and packaging
+
+- Menu / gerer les inputs. **Long**
+    [Sahel/Basile.Menu]
+    - regenerate a new maze.
+    - show/hide resolution
+    - change colors
+
+[Basile]
+- no isolated cell ?
+- no 3x3 ?
+- TODOs
+
+[Sahel]
+- output_file
+- solver + carver
+
+
+[Optionel]
+- creer des themes
+- Resolution par animation
+- Ouvrir entry/exit sur les bords
+
+[Done]
+- Makefile
