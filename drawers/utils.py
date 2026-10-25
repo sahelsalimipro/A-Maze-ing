@@ -1,8 +1,6 @@
 from typing import Literal
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from pixels import Pixel
+from pixels import Pixel
 Anchor = Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"]
 
 # Utilities functions, that many different drawers may require.

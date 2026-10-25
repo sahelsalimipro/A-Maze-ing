@@ -1,6 +1,7 @@
 from typing import NamedTuple, Any
 
 from drawers import _total_buf
+from menu import compute_menu_layout
 import globals
 
 class Rect(NamedTuple):
@@ -70,12 +71,14 @@ def resolve_dimensions(config: dict[str, Any]) -> dict[str, Rect]:
         "padd-bottom": config["BOT_PADDING"],
     }
 
+    cols = globals.TERMINAL_SIZE.columns
+    menu_h = compute_menu_layout(globals.COMMANDS, cols).height
     rects: dict[str, Rect] = {
         "extra-left":  Rect(0, 0, xt_l, total_height),
         "padd-left":   Rect(xt_l, 0, padd_l, total_height),
         "padd-right":  Rect(x_right, 0, padd_r, total_height),
         "extra-right": Rect(x_right + padd_r, 0, xt_r, total_height),
-        "menu":        Rect(0, total_height, globals.TERMINAL_SIZE.columns, 10),  # TBD
+        "menu":        Rect(0, total_height, cols, menu_h),
     }
 
     y = 0

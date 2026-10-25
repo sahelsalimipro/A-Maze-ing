@@ -9,7 +9,6 @@ from regions import Region
 from dimensions import resolve_dimensions
 from amazeing import Maze
 from themes_loader import load_theme
-import globals
 
 
 if __name__ == "__main__":
@@ -20,6 +19,10 @@ if __name__ == "__main__":
     except ConfigErr as e:
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
+
+    import globals # noqa: E402
+    assert config is not None
+    globals.CONFIG = config
 
     clear_console()
 

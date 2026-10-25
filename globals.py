@@ -1,8 +1,10 @@
 from os import get_terminal_size, terminal_size
-from typing import Literal
+from typing import Literal, Any
 
-from commands import Command
-from input_commands import recolor, toggle_solve, regenerate, new_seed, toggle_theme, change_theme
+from menu import Command, INPUT_COMMAND, recolor, toggle_solve, regenerate, new_seed, toggle_theme, change_theme, BoolIndicator, StrIndicator
+
+# ----------     config    ---------- #
+CONFIG: dict[str, Any]
 
 # ----------   Rendering   ---------- #
 FPS: int = 12
@@ -18,12 +20,10 @@ TERMINAL_SIZE: terminal_size = get_terminal_size()
 # probably obsolete, since themes_loader.py checks dynamically ?
 
 
-# ----------     Inputs    ---------- #
-INPUT_COMMAND = Literal["c", "s", "r", "n", "t", "y"]
-
+# ----------      Menu     ---------- #
 COMMANDS: tuple[Command, ...] = (
-    Command("Change colors", "Randomly changes the colors of the maze", "c", recolor),
-    Command("Solve/Unsolve", "Toggles the state of the maze between solved and unsolved", "s", toggle_solve, True),
+    Command("Change colors", "Randomly changes the colors", "c", recolor),
+    Command("Solve/Unsolve", "Toggles the state: solved & unsolved", "s", toggle_solve, BoolIndicator("SOLVED")),
     Command("Regenerate", "Remake the maze (with same seed)", "r", regenerate),
     Command("New seed", "Remake the maze (with a new seed)", "n", new_seed),
     Command("Theme on/off", "Enables or disable the use of theme", "t", toggle_theme),
@@ -31,6 +31,13 @@ COMMANDS: tuple[Command, ...] = (
 )
 
 COMMAND_TABLE: dict[INPUT_COMMAND, Command] = { com.input: com for com in COMMANDS }
+
+LABELS = ("Press:", "Name:", "Indicator:", "Description:")
+LABEL_W = max(len(l) for l in LABELS)
+MARGIN = 1
+TEXT_X = MARGIN + LABEL_W + 1          # where every value starts
+MIN_TEXT_W = 10                        # below this, wrapping is pointless
+BLOCK_GAP = 1                          # blank lines between commands
 
 # ----------   Junctions   ---------- #
 JUNCTIONS_CHARS = {

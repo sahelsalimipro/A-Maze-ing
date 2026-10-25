@@ -3,7 +3,8 @@ from typing import Any, Callable
 
 from pixels import Pixel
 from .utils import _center
-from globals import COMMANDS
+from ..globals import COMMANDS, MARGIN, LABELS
+from menu import compute_menu_layout, Command, MenuLayout
 
 class Drawer(ABC):
 
@@ -38,50 +39,38 @@ class EmptyDrawer(Drawer):
 class MenuDrawer(Drawer):
     """Draws a menu"""
 
-    def __init__(self) -> None:
+    commands: tuple[Command, ...]
+
+    def __init__(self, commands: tuple[Command, ...]) -> None:
+        self.commands = commands
+        self.layout: MenuLayout | None = None
         return
+
+    @staticmethod
+    def _put(buffer: list[list[Pixel]], y: int, x: int, text: str) -> None:
+        for i, ch in enumerate(text):
+            buffer[y][x + i].char = ch
 
     def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
-        # TODO ensure menu dimensions to be big enough
-
-        height = len(buffer)
         width = len(buffer[0])
+        lay = self.layout = compute_menu_layout(self.commands, width)
+        self._put(buffer, 0, 0, " Actions ".center(width, "-"))
 
+        for cmd, b in zip(self.commands, lay.blocks):
+            self._put(buffer, b.y_press, MARGIN, LABELS[0])
+            self._put(buffer, b.y_press, lay.text_x, cmd.input)
 
-        title = " Actions "
-        len_t = len(title)
-        padd = width - len_t
-        padd_left = padd // 2
+            self._put(buffer, b.y_name, MARGIN, LABELS[1])
+            for i, line in enumerate(b.name_lines):
+                self._put(buffer, b.y_name + i, lay.text_x, line)
 
-        for i in range(padd_left):
-            buffer[0][i].char = '-'
-        for i in range(len_t):
-            buffer[0][i + padd_left].char = title[i]
-        for i in range(padd - padd_left):
-            buffer[0][i + padd_left + len_t].char = '-'
+            self._put(buffer, b.y_indicator, MARGIN, LABELS[2])
+            self._put(buffer, b.y_indicator, lay.text_x, str(cmd.indicator))
 
-        columns = {
-            "Press:" : [],
-            "Command:": [],
-            "Indicator:" : [],
-            "Description:" : []
-        }
-
-        for c in COMMANDS:
-            columns["Press:"].append(c.input)
-            columns["Command:"].append(c.name)
-            columns["Indicator:"].append(c.indicator)
-            columns["Descripton:"].append(c.description)
-
-        lens = []
-        for name, values in columns.items():
-            if name in ("Description:", "Indicator:"): #nah, not really what I want...
-                lens.append(len(name))
-                continue
-
-            lens.append(max(values, key=len))
-
-        return
+            self._put(buffer, b.y_desc, MARGIN, LABELS[3])
+            for i, line in enumerate(b.desc_lines):
+                self._put(buffer, b.y_desc + i, lay.text_x, line)
+            return
 
     def update(
             self,
