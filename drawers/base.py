@@ -75,7 +75,7 @@ class MenuDrawer(Drawer):
 
         lens = []
         for name, values in columns.items():
-            if name in ("Description:", "Indicator:"):
+            if name in ("Description:", "Indicator:"): #nah, not really what I want...
                 lens.append(len(name))
                 continue
 
