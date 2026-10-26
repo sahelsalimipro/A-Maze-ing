@@ -77,12 +77,14 @@ class FieldSpec:
     key: str
     parser: Callable[[str], Any]
     default: Any
-    critical: bool = False  # True: bad/missing value aborts startup. False: log a warning + fall back to default.
+    # True: bad/missing value aborts startup. False: log a warning + fall back to default.
+    critical: bool = False
 
 
 FIELDS: list[FieldSpec] = [
-    FieldSpec("MAZE_WIDTH", parse_int, 10),
-    FieldSpec("MAZE_HEIGHT", parse_int, 10),
+    FieldSpec("MAZE_WIDTH", parse_int, 20),
+    FieldSpec("MAZE_HEIGHT", parse_int, 15),
+    FieldSpec("SOLVED", parse_bool, False),
 
     FieldSpec("TILE_RATIO", parse_tile_ratio, (3, 1), critical=True),
     FieldSpec("CENTER_MAZE", parse_bool, True),
@@ -137,7 +139,8 @@ def load_config() -> dict[str, Any]:
             if spec.critical:
                 critical_errors.append(f"{spec.key} is missing (required)")
             else:
-                logger.warning("%s not set, using default %r", spec.key, spec.default)
+                logger.warning("%s not set, using default %r",
+                               spec.key, spec.default)
             values[spec.key] = spec.default
             continue
 
@@ -147,10 +150,12 @@ def load_config() -> dict[str, Any]:
             if spec.critical:
                 critical_errors.append(f"{spec.key}={raw!r} is invalid: {e}")
             else:
-                logger.warning("%s=%r is invalid (%s), using default %r", spec.key, raw, e, spec.default)
+                logger.warning(
+                    "%s=%r is invalid (%s), using default %r", spec.key, raw, e, spec.default)
                 values[spec.key] = spec.default
 
     if critical_errors:
-        raise ConfigErr("Invalid configuration:\n" + "\n".join(f"  - {e}" for e in critical_errors))
+        raise ConfigErr("Invalid configuration:\n" +
+                        "\n".join(f"  - {e}" for e in critical_errors))
 
     return values

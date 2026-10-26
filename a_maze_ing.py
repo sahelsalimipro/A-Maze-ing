@@ -20,7 +20,7 @@ if __name__ == "__main__":
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
 
-    import globals # noqa: E402
+    import globals  # noqa: E402
     assert config is not None
     globals.CONFIG = config
 
@@ -33,7 +33,8 @@ if __name__ == "__main__":
     }
 
     # Creating the maze
-    maze = Maze(dimensions=(config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), seed=42)
+    maze = Maze(dimensions=(config["MAZE_WIDTH"],
+                config["MAZE_HEIGHT"]), seed=42)
 
     # Prepares the drawers, responsible for rendering
     drawers = load_theme(cast(str, config.get("THEME_NAME")), config, maze)
@@ -42,7 +43,8 @@ if __name__ == "__main__":
         if __debug__:
             assert_rendering_dimensions(regions)
 
-        maze.resolve() # TODO: dynamic resolution
+        if config.get("SOLVED", False):
+            maze.resolve()
 
         for name, region in regions.items():
             region.attach(drawers[name])
