@@ -3,7 +3,7 @@ from typing import Any, Callable
 
 from pixels import Pixel
 from .utils import _center
-from ..globals import COMMANDS, MARGIN, LABELS
+from globals import COMMANDS, MARGIN, LABELS
 from menu import compute_menu_layout, Command, MenuLayout
 
 class Drawer(ABC):
