@@ -3,8 +3,8 @@ from typing import Any, Callable
 
 from pixels import Pixel
 from .utils import _center
-from globals import COMMANDS, MARGIN, LABELS
-from menu import compute_menu_layout, Command, MenuLayout
+from menu import compute_menu_layout, Command, MenuLayout, COMMANDS, MenuRenderingCtx
+
 
 class Drawer(ABC):
 
@@ -22,6 +22,7 @@ class Drawer(ABC):
         """Updates pixels and marks them for the renderer"""
         ...
 
+
 class EmptyDrawer(Drawer):
     """Draws empty space in default terminal color"""
 
@@ -29,12 +30,13 @@ class EmptyDrawer(Drawer):
         return
 
     def update(
-            self,
-            buffer: list[list[Pixel]],
-            dt: float,
-            mark: Callable[[int, int], None]
-        ) -> None:
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return
+
 
 class MenuDrawer(Drawer):
     """Draws a menu"""
@@ -57,25 +59,29 @@ class MenuDrawer(Drawer):
         self._put(buffer, 0, 0, " Actions ".center(width, "-"))
 
         for cmd, b in zip(self.commands, lay.blocks):
-            self._put(buffer, b.y_press, MARGIN, LABELS[0])
+            self._put(buffer, b.y_press, MenuRenderingCtx.margin,
+                      MenuRenderingCtx.labels[0])
             self._put(buffer, b.y_press, lay.text_x, cmd.input)
 
-            self._put(buffer, b.y_name, MARGIN, LABELS[1])
+            self._put(buffer, b.y_name, MenuRenderingCtx.margin,
+                      MenuRenderingCtx.labels[1])
             for i, line in enumerate(b.name_lines):
                 self._put(buffer, b.y_name + i, lay.text_x, line)
 
-            self._put(buffer, b.y_indicator, MARGIN, LABELS[2])
+            self._put(buffer, b.y_indicator, MenuRenderingCtx.margin,
+                      MenuRenderingCtx.labels[2])
             self._put(buffer, b.y_indicator, lay.text_x, str(cmd.indicator))
 
-            self._put(buffer, b.y_desc, MARGIN, LABELS[3])
+            self._put(buffer, b.y_desc, MenuRenderingCtx.margin,
+                      MenuRenderingCtx.labels[3])
             for i, line in enumerate(b.desc_lines):
                 self._put(buffer, b.y_desc + i, lay.text_x, line)
-            return
+        return
 
     def update(
-            self,
-            buffer: list[list[Pixel]],
-            dt: float,
-            mark: Callable[[int, int], None]
-        ) -> None:
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return

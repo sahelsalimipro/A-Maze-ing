@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Any, TYPE_CHECKING
 
 from drawers import Drawer
@@ -29,7 +30,7 @@ class Region():
 
     def __eq__(self, value: object) -> bool:
         return value == self.name
-    
+
     def attach(self, drawer: Drawer) -> None:
         self.drawer = drawer
 
@@ -42,7 +43,7 @@ class Region():
 
     def update(self, dt: float) -> None:
         if not self.drawer:
-                raise NotImplementedError("Drawer undefined")
+            raise NotImplementedError("Drawer undefined")
         self.drawer.update(self.buf, dt, self._mark)
 
     def _mark(self, x: int, y: int) -> None:

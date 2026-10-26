@@ -2,7 +2,6 @@ import textwrap
 from dataclasses import dataclass
 
 from .commands import Command
-from globals import BLOCK_GAP, TEXT_X, MARGIN, MIN_TEXT_W
 
 # ----------------- Actions ---------------------
 # Press: a
@@ -13,10 +12,19 @@ from globals import BLOCK_GAP, TEXT_X, MARGIN, MIN_TEXT_W
 
 # Press: b
 # Name: launch rabbit
-# Indicator: 
+# Indicator:
 # Description: bkzjdjshdsjdh
 
 
+@dataclass(frozen=True)
+class MenuRenderingCtx:
+
+    labels: tuple[str, ...] = ("Press:", "Name:", "Indicator:", "Description:")
+    label_w: int = max(len(l) for l in labels)
+    margin: int = 1
+    text_x: int = margin + label_w + 1          # where every value starts
+    min_text_w: int = 10                        # below this, wrapping is pointless
+    block_gap: int = 1                          # blank lines between commands
 
 
 @dataclass(frozen=True)
@@ -44,8 +52,8 @@ def _wrap(text: str, width: int) -> tuple[str, ...]:
 
 
 def compute_menu_layout(commands: tuple[Command, ...], width: int) -> MenuLayout:
-    text_w = width - TEXT_X - MARGIN
-    if text_w < MIN_TEXT_W:
+    text_w = width - MenuRenderingCtx.text_x - MenuRenderingCtx.margin
+    if text_w < MenuRenderingCtx.min_text_w:
         raise ValueError(f"Terminal too narrow for the menu ({width} columns)")
 
     blocks: list[MenuBlock] = []
@@ -58,15 +66,17 @@ def compute_menu_layout(commands: tuple[Command, ...], width: int) -> MenuLayout
         y_name = y_press + 1
         y_indicator = y_name + len(name_lines)
         y_desc = y_indicator + 1
-        y = y_desc + len(desc_lines) + BLOCK_GAP
+        y = y_desc + len(desc_lines) + MenuRenderingCtx.block_gap
 
         blocks.append(MenuBlock(y_press, y_name, name_lines,
                                 y_indicator, y_desc, desc_lines))
 
     return MenuLayout(
-        text_x=TEXT_X,
+        text_x=MenuRenderingCtx.text_x,
         text_w=text_w,
-        indicator_w=tuple(c.indicator.width if c.indicator else 0 for c in commands),
+        indicator_w=tuple(
+            c.indicator.width if c.indicator else 0 for c in commands),
         blocks=tuple(blocks),
-        height=y - BLOCK_GAP,                       # no trailing blank line
+        # no trailing blank line
+        height=y - MenuRenderingCtx.block_gap
     )

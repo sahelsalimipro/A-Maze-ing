@@ -7,16 +7,20 @@ import time
 from pixels import px_to_str
 from regions import Region
 import globals
+from menu import handle_inputs
 
 logger = logging.getLogger(__name__)
+
 
 def clear_console() -> None:
     print("\033[H\033[J", end="")
     return
 
+
 def update_dirty_pixels(regions: list[Region]) -> None:
     parts: list[str] = []
-    cursor: tuple[int, int] | None = None    # (row, col), 0-based, where the terminal cursor is now
+    # (row, col), 0-based, where the terminal cursor is now
+    cursor: tuple[int, int] | None = None
 
     for region in regions:
         ox, oy = region.origin
@@ -27,7 +31,8 @@ def update_dirty_pixels(regions: list[Region]) -> None:
                 parts.append(f"\033[{target[0] + 1};{target[1] + 1}H")
 
             parts.append(px_to_str(region.buf[y][x]))
-            cursor = (target[0], target[1] + 1)   # writing one char advances the cursor by one
+            # writing one char advances the cursor by one
+            cursor = (target[0], target[1] + 1)
 
     if not parts:                            # nothing changed: no write, no flush
         return
@@ -35,21 +40,26 @@ def update_dirty_pixels(regions: list[Region]) -> None:
     sys.stdout.write("\033[?2026h" + "".join(parts) + "\033[0m\033[?2026l")
     sys.stdout.flush()
 
+
 def render(regions: dict[str, Region]) -> None:
 
     lines = []
     total_y: int = 0
-    for reg_name in globals.MID_REGION_ORDER: # excludes the side padding and the menu
+    for reg_name in globals.MID_REGION_ORDER:  # excludes the side padding and the menu
         region = regions.get(reg_name)
         if region is None:
             continue
         for y in range(region.height):
             line = (
-                "".join(px_to_str(px) for px in regions["extra-left"].buf[total_y])
-                + "".join(px_to_str(px) for px in regions["padd-left"].buf[total_y])
+                "".join(px_to_str(px)
+                        for px in regions["extra-left"].buf[total_y])
+                + "".join(px_to_str(px)
+                          for px in regions["padd-left"].buf[total_y])
                 + "".join(px_to_str(px) for px in region.buf[y])
-                + "".join(px_to_str(px) for px in regions["padd-right"].buf[total_y])
-                + "".join(px_to_str(px) for px in regions["extra-right"].buf[total_y])
+                + "".join(px_to_str(px)
+                          for px in regions["padd-right"].buf[total_y])
+                + "".join(px_to_str(px)
+                          for px in regions["extra-right"].buf[total_y])
             )
             lines.append(line)
             total_y += 1
@@ -58,9 +68,10 @@ def render(regions: dict[str, Region]) -> None:
         lines.append("".join(px_to_str(px) for px in row))
     print("\n".join(lines))
 
+
 def run(regions: list[Region]) -> None:
 
-    sys.stdout.write("\033[?25l") # Remove the user's cursor
+    sys.stdout.write("\033[?25l")  # Remove the user's cursor
     sys.stdout.flush()
 
     STEP: float = globals.STEP
@@ -77,7 +88,7 @@ def run(regions: list[Region]) -> None:
             acc += min(now - last, globals.MAX_DT)
             last = now
 
-            # handle_inputs() TODO
+            handle_inputs()
 
             # Updating simulation
             while acc >= STEP:
@@ -90,9 +101,9 @@ def run(regions: list[Region]) -> None:
                 update_dirty_pixels(regions)
                 last_render = now
             else:
-                time.sleep(0.001) # yields the cpu for a millisec
+                time.sleep(0.001)  # yields the cpu for a millisec
 
     finally:
 
-        sys.stdout.write("\033[0m\033[?25h") # Restore the cursor
+        sys.stdout.write("\033[0m\033[?25h")  # Restore the cursor
         sys.stdout.flush()

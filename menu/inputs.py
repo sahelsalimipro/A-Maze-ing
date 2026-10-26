@@ -2,11 +2,12 @@ from typing import TypeGuard, get_args
 from collections.abc import Callable
 import sys
 
-from globals import COMMAND_TABLE, INPUT_COMMAND
+from .commands import COMMAND_TABLE, INPUT_COMMAND
 
 
 def is_command(value: str) -> TypeGuard[INPUT_COMMAND]:
     return value in COMMAND_TABLE
+
 
 def handle_inputs() -> bool:
     line = sys.stdin.readline()

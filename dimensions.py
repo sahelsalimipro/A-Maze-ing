@@ -1,14 +1,16 @@
 from typing import NamedTuple, Any
 
 from drawers import _total_buf
-from menu import compute_menu_layout
+from menu import compute_menu_layout, COMMANDS
 import globals
+
 
 class Rect(NamedTuple):
     x: int
     y: int
     w: int
     h: int
+
 
 def _split_horizontal_space(
     maze_width: int, left: int, right: int, columns: int, center: bool
@@ -40,7 +42,6 @@ def resolve_dimensions(config: dict[str, Any]) -> dict[str, Rect]:
     ratio_x, ratio_y = config["TILE_RATIO"]
     ct_cols = config["MAZE_WIDTH"]   # doesn't include Limit border tiles
     ct_rows = config["MAZE_HEIGHT"]
-    
 
     maze_width: int = _total_buf(ct_cols, ratio_x)
     maze_height: int = _total_buf(ct_rows, ratio_y)
@@ -72,7 +73,7 @@ def resolve_dimensions(config: dict[str, Any]) -> dict[str, Rect]:
     }
 
     cols = globals.TERMINAL_SIZE.columns
-    menu_h = compute_menu_layout(globals.COMMANDS, cols).height
+    menu_h = compute_menu_layout(COMMANDS, cols).height
     rects: dict[str, Rect] = {
         "extra-left":  Rect(0, 0, xt_l, total_height),
         "padd-left":   Rect(xt_l, 0, padd_l, total_height),

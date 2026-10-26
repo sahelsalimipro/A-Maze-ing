@@ -1,14 +1,14 @@
 from typing import Any, cast
 import sys
 
-from render import clear_console, render, run
 from logger import setup_logging
-from config import load_config
 from errors import ConfigErr, assert_rendering_dimensions
 from regions import Region
+from config import load_config
 from dimensions import resolve_dimensions
 from amazeing import Maze
 from themes_loader import load_theme
+from render import clear_console, render, run
 
 
 if __name__ == "__main__":

@@ -3,20 +3,20 @@ from abc import ABC, abstractmethod
 
 import globals
 
+
 class Indicator(ABC):
 
     width: int
     propertykey: str
-    _config: dict[str, Any]
 
     def __init__(self, property: str) -> None:
         self.propertykey = property
-        self._config = globals.CONFIG
         return
-    
+
     @abstractmethod
     def __str__(self) -> str:
         ...
+
 
 class BoolIndicator(Indicator):
 
@@ -26,7 +26,8 @@ class BoolIndicator(Indicator):
         return
 
     def __str__(self) -> str:
-        return "ON " if self._config[self.propertykey] else "OFF"
+        return "ON " if globals.CONFIG.get(self.propertykey, False) else "OFF"
+
 
 class StrIndicator(Indicator):
 
@@ -36,4 +37,4 @@ class StrIndicator(Indicator):
         return
 
     def __str__(self) -> str:
-        return self._config[self.propertykey]
+        return globals.CONFIG.get(self.propertykey, "")
