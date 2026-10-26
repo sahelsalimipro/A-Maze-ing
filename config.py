@@ -40,6 +40,22 @@ def parse_char(raw: str) -> str:
     return s
 
 
+def parse_coordinates(raw: str) -> tuple[int, int]:
+    parts = raw.strip().split(",")
+    if len(parts) != 2:
+        raise ValueError(f"expected 'x,y', got {raw!r}")
+
+    try:
+        x, y = (int(p.strip()) for p in parts)
+    except ValueError:
+        raise ValueError(
+            f"coordinates must be integers, got {raw!r}") from None
+
+    if x < 0 or y < 0:
+        raise ValueError(f"coordinates must be >= 0, got {raw!r}")
+    return (x, y)
+
+
 def parse_tile_ratio(raw: str) -> tuple[int, int]:
     parts = raw.strip().split(",")
     if len(parts) != 2:
@@ -90,6 +106,8 @@ FIELDS: list[FieldSpec] = [
     FieldSpec("SOLVED", parse_bool, False),
     FieldSpec("SEED", parse_int, 42, critical=True),
     FieldSpec("PERFECT", parse_bool, True, critical=True),
+    FieldSpec("ENTRY", parse_coordinates, None),
+    FieldSpec("EXIT", parse_coordinates, None),
 
     FieldSpec("TILE_RATIO", parse_tile_ratio, (3, 1), critical=True),
     FieldSpec("CENTER_MAZE", parse_bool, True),

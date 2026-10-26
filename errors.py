@@ -79,6 +79,13 @@ def validate(config: dict[str, Any]) -> None:
             f"Maze dimensions specified {maze_w}x{maze_h} too small, min 9x7"
         )
 
+    entry = config.get("ENTRY", None)
+
+    if entry is not None:
+        if _is_above(entry[0], maze_w):
+            raise ConfigErr(f"Invalid ENTRY x coordinate {entry[0]!r}")
+        if _is_above(entry[1], maze_h):
+            raise ConfigErr(f"Invalid ENTRY y coordinate {entry[1]!r}")
 #     tile_ratio = config.get("TILE_RATIO", (0, 0))
 #     if _is_below(tile_ratio[0], 1) or _is_below(tile_ratio[1], 1):
 #         raise ConfigErr(
