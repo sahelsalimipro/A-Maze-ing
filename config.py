@@ -105,6 +105,7 @@ FIELDS: list[FieldSpec] = [
     FieldSpec("BACKGROUND_CLR", parse_color, None),
     FieldSpec("WALLS_CLR", parse_color, None),
     FieldSpec("TRAIL_CLR", parse_color, None),
+    FieldSpec("LOGO_CLR", parse_color, (255, 255, 255)),
     FieldSpec("ENTRYPOINT_CLR", parse_color, None),
     FieldSpec("EXITPOINT_CLR", parse_color, None),
     FieldSpec("TOP_PADDING_CLR", parse_color, None),

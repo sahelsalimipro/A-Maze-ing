@@ -2,12 +2,41 @@ import logging
 from collections import namedtuple
 from random import Random
 
-from tiles import BaseTile, Tile, Limit
+from tiles import BaseTile, Tile, Limit, LogoTile
 from dirs import DELTAS
 from carve import pick_endpoints, wilson
 from solvers import astar
 
 logger = logging.getLogger(__name__)
+
+
+LOGO_42: tuple[str, ...] = (
+    "#.#.###",
+    "#.#...#",
+    "###.###",
+    "..#.#..",
+    "..#.###",
+)
+
+
+def logo_cells(
+    width: int,
+    height: int
+) -> set[tuple[int, int]]:
+    """Grid coordinates of the logo cells, centred in the maze."""
+
+    pattern_h, pattern_w = 5, 7
+
+    # +1 because grid coordinates include the Limit ring
+    off_x = 1 + (width - pattern_w) // 2
+    off_y = 1 + (height - pattern_h) // 2
+    return {
+        (off_x + dx, off_y + dy)
+        for dy, row in enumerate(LOGO_42)
+        for dx, ch in enumerate(row)
+        if ch == "#"
+    }
+
 
 GenInfos = namedtuple('GenInfos', ['seed', 'loop_chance'])
 
@@ -17,6 +46,9 @@ class Maze():
         self.dimensions = dimensions
         self.width = dimensions[0]
         self.height = dimensions[1]
+
+        self.logo = logo_cells(self.width, self.height)
+        # self.has_logo = bool(self.logo)
 
         self.seed = infos.seed
         self.loop_chance = infos.loop_chance
@@ -47,16 +79,17 @@ class Maze():
         def is_edge(x, y) -> bool:
             return x == 0 or x == max_x or y == 0 or y == max_y
 
-        rows: list[list[BaseTile]] = []
-        for y in range(max_y + 1):
-            row: list[BaseTile] = []
-            for x in range(max_x + 1):
-                if is_edge(x, y):
-                    row.append(Limit((x, y), self))
-                else:
-                    row.append(Tile((x, y), self))
-            rows.append(row)
+        def make_tile(x: int, y: int) -> BaseTile:
+            if is_edge(x, y):
+                return Limit((x, y), self)
+            if (x, y) in self.logo:
+                return LogoTile((x, y), self)
+            return Tile((x, y), self)
 
+        rows = [
+            [make_tile(x, y) for x in range(max_x + 1)]
+            for y in range(max_y + 1)
+        ]
         _wire_neighbours(rows)
         return rows
 

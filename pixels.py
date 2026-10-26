@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import Literal
 
-PixelKind = Literal["content", "wall", "junction", "empty"]
+PixelKind = Literal["content", "wall", "junction", "empty", "logo"]
+
 
 class Pixel:
     def __init__(self) -> None:
@@ -9,6 +10,7 @@ class Pixel:
         self.fg_clr: tuple[int, int, int] | None = None
         self.bg_clr: tuple[int, int, int] | None = None
         self.kind: PixelKind = "empty"
+
 
 def px_to_str(pixel: Pixel) -> str:
     """Render a single Pixel as an ANSI-colored string, resetting after."""

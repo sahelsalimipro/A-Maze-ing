@@ -6,6 +6,7 @@ from globals import JUNCTIONS_CHARS
 
 if TYPE_CHECKING:
     from pixels import Pixel, PixelKind
+    from tiles import BaseTile
     from amazeing import Maze
 
 
@@ -20,6 +21,7 @@ _GLYPHS: dict[tuple[str, str], str] = {
     ("bottom", "left"):  "▝",
     ("bottom", "right"): "▘",
 }
+
 
 def _content_placements(
     ratio_x: int, ratio_y: int
@@ -41,6 +43,11 @@ def _content_placements(
         for dx, ctag in cols
     }
 
+
+def _is_logo(tile: BaseTile | None) -> bool:
+    return tile is not None and tile.isLogo
+
+
 class MazeDrawer(Drawer):
     def __init__(self, maze: Maze, config: dict[str, Any]) -> None:
         self.maze = maze
@@ -48,6 +55,7 @@ class MazeDrawer(Drawer):
         self.bg_clr: tuple[int, int, int] = config["BACKGROUND_CLR"]
         self.wall_clr: tuple[int, int, int] = config["WALLS_CLR"]
         self.trail_clr: tuple[int, int, int] = config["TRAIL_CLR"]
+        self.logo_clr: tuple[int, int, int] = config["LOGO_CLR"]
         self.entry_clr: tuple[int, int, int] = config["ENTRYPOINT_CLR"]
         self.exit_clr: tuple[int, int, int] = config["EXITPOINT_CLR"]
 
@@ -56,6 +64,7 @@ class MazeDrawer(Drawer):
             "wall": self.wall_clr,
             "junction": self.wall_clr,
             "empty": self.bg_clr,
+            "logo": self.logo_clr
         }
 
         self._start_char = config["ENTRYPOINT_CHAR"]
@@ -68,11 +77,11 @@ class MazeDrawer(Drawer):
         return
 
     def update(
-            self,
-            buffer: list[list[Pixel]],
-            dt: float,
-            mark: Callable[[int, int], None]
-        ) -> None:
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return
 
     def fill_buffer(self, buffer: list[list[Pixel]]) -> None:
