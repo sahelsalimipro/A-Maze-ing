@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 LOGO_42: tuple[str, ...] = (
-    "#.#.###",
+    "#...###",
     "#.#...#",
     "###.###",
     "..#.#..",

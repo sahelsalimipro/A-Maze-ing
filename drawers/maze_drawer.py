@@ -10,6 +10,22 @@ if TYPE_CHECKING:
     from amazeing import Maze
 
 
+# Index = bitmask of filled quadrants: UL=1, UR=2, LL=4, LR=8
+QUADRANT_GLYPHS = " ▘▝▀▖▌▞▛▗▚▐▜▄▙▟█"
+
+
+def _blocks(v: int, ratio: int) -> tuple[int, int]:
+    """Cell index of the first and second half of buffer coordinate `v`.
+
+    On a wall line, the two halves belong to two different cells;
+    inside a cell, both halves belong to the same one.
+    """
+    step = ratio + 1
+    if v % step == 0:                  # on a wall line
+        return v // step - 1, v // step
+    return v // step, v // step
+
+
 _GLYPHS: dict[tuple[str, str], str] = {
     ("mid", "mid"):      "○",
     ("mid", "left"):     "▐",
@@ -55,7 +71,6 @@ class MazeDrawer(Drawer):
         self.bg_clr: tuple[int, int, int] = config["BACKGROUND_CLR"]
         self.wall_clr: tuple[int, int, int] = config["WALLS_CLR"]
         self.trail_clr: tuple[int, int, int] = config["TRAIL_CLR"]
-        self.logo_clr: tuple[int, int, int] = config["LOGO_CLR"]
         self.entry_clr: tuple[int, int, int] = config["ENTRYPOINT_CLR"]
         self.exit_clr: tuple[int, int, int] = config["EXITPOINT_CLR"]
 
@@ -63,8 +78,7 @@ class MazeDrawer(Drawer):
             "content": self.trail_clr,
             "wall": self.wall_clr,
             "junction": self.wall_clr,
-            "empty": self.bg_clr,
-            "logo": self.logo_clr
+            "empty": self.bg_clr
         }
 
         self._start_char = config["ENTRYPOINT_CHAR"]
@@ -74,6 +88,7 @@ class MazeDrawer(Drawer):
     def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
         self.fill_buffer(buffer)
         self._colorize(buffer)
+        self._paint_logo(buffer)
         return
 
     def update(
@@ -90,10 +105,20 @@ class MazeDrawer(Drawer):
         ct_rows, ct_cols = len(inner), len(inner[0])
         placements = _content_placements(ratio_x, ratio_y)
 
+        self._logo_px: set[tuple[int, int]] = set()
+
         for r_idx, row in enumerate(inner):
             cy = _scale(r_idx, ratio_y)
             for c_idx, tile in enumerate(row):
                 cx = _scale(c_idx, ratio_x)
+
+                if tile.isLogo:
+                    # the cell + its ring of walls and corners
+                    self._logo_px.update(
+                        (y, x)
+                        for y in range(cy - 1, cy + ratio_y + 1)
+                        for x in range(cx - 1, cx + ratio_x + 1)
+                    )
 
                 for dy in range(ratio_y):
                     for dx in range(ratio_x):
@@ -168,8 +193,29 @@ class MazeDrawer(Drawer):
         return
 
     def _colorize(self, buffer: list[list[Pixel]]) -> None:
-        for row in buffer:
-            for px in row:
-                px.fg_clr = self._kind_colors.get(px.kind, None)
-                px.bg_clr = self.bg_clr
+        for y, row in enumerate(buffer):
+            for x, px in enumerate(row):
+                if (y, x) in self._logo_px:
+                    px.fg_clr = px.bg_clr = self.wall_clr  # char invisible
+                else:
+                    px.fg_clr = self._kind_colors.get(px.kind)
+                    px.bg_clr = self.bg_clr
         return
+
+    def _paint_logo(self, buffer: list[list[Pixel]]) -> None:
+        ratio_x, ratio_y = self.ratio
+        inner = [row[1:-1] for row in self.maze.grid[1:-1]]
+
+        def is_logo(r: int, c: int) -> bool:
+            return (0 <= r < len(inner) and 0 <= c < len(inner[0])
+                    and inner[r][c].isLogo)
+
+        for y, x in self._logo_px:
+            top, bottom = _blocks(y, ratio_y)
+            left, right = _blocks(x, ratio_x)
+            mask = (is_logo(top, left) * 1 | is_logo(top, right) * 2
+                    | is_logo(bottom, left) * 4 | is_logo(bottom, right) * 8)
+            px = buffer[y][x]
+            px.char = QUADRANT_GLYPHS[mask]
+            px.fg_clr = self.wall_clr
+            px.bg_clr = self.bg_clr
