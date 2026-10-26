@@ -1,7 +1,5 @@
 
 [Sahel/Basile]
-- ajouter seed/loop_chance parametres.
-- validation parametres
 - Logo 42
 - Tester les animations
 - Readme + License
@@ -30,4 +28,6 @@
 - Ouvrir entry/exit sur les bords
 
 [Done]
+- ajouter seed/loop_chance parametres.
+- validation parametres
 - Makefile

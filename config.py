@@ -23,7 +23,10 @@ def parse_bool(raw: str) -> bool:
 
 
 def parse_int(raw: str) -> int:
-    return int(raw.strip())
+    res = int(raw.strip())
+    if res < 0:
+        raise ValueError("Negative value")
+    return res
 
 
 def parse_str(raw: str) -> str:
@@ -85,6 +88,8 @@ FIELDS: list[FieldSpec] = [
     FieldSpec("MAZE_WIDTH", parse_int, 20),
     FieldSpec("MAZE_HEIGHT", parse_int, 15),
     FieldSpec("SOLVED", parse_bool, False),
+    FieldSpec("SEED", parse_int, 42, critical=True),
+    FieldSpec("PERFECT", parse_bool, True, critical=True),
 
     FieldSpec("TILE_RATIO", parse_tile_ratio, (3, 1), critical=True),
     FieldSpec("CENTER_MAZE", parse_bool, True),

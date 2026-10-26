@@ -2,11 +2,11 @@ from typing import Any, cast
 import sys
 
 from logger import setup_logging
-from errors import ConfigErr, assert_rendering_dimensions
+from errors import ConfigErr, assert_rendering_dimensions, validate
 from regions import Region
 from config import load_config
 from dimensions import resolve_dimensions
-from amazeing import Maze
+from amazeing import Maze, GenInfos
 from themes_loader import load_theme
 from render import clear_console, render, run
 
@@ -16,6 +16,7 @@ if __name__ == "__main__":
     config: dict[str, Any] | None = None
     try:
         config = load_config()
+        validate(config)
     except ConfigErr as e:
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
@@ -33,8 +34,8 @@ if __name__ == "__main__":
     }
 
     # Creating the maze
-    maze = Maze(dimensions=(config["MAZE_WIDTH"],
-                config["MAZE_HEIGHT"]), seed=42)
+    gen_infos = GenInfos(config["SEED"], 0 if config["PERFECT"] else 8)
+    maze = Maze((config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), gen_infos)
 
     # Prepares the drawers, responsible for rendering
     drawers = load_theme(cast(str, config.get("THEME_NAME")), config, maze)

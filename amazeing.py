@@ -1,4 +1,5 @@
 import logging
+from collections import namedtuple
 from random import Random
 
 from tiles import BaseTile, Tile, Limit
@@ -8,23 +9,27 @@ from solvers import astar
 
 logger = logging.getLogger(__name__)
 
+GenInfos = namedtuple('GenInfos', ['seed', 'loop_chance'])
+
+
 class Maze():
-    def __init__(self, dimensions: tuple[int, int], seed: float) -> None:
+    def __init__(self, dimensions: tuple[int, int], infos: GenInfos) -> None:
         self.dimensions = dimensions
         self.width = dimensions[0]
         self.height = dimensions[1]
 
-        self.seed = seed
+        self.seed = infos.seed
+        self.loop_chance = infos.loop_chance
         self.grid = self._build_grid()
-        self._rng = Random(seed)
+        self._rng = Random(self.seed)
         self._start, self._goal = pick_endpoints(self)
-        self._carve(8) #TODO implement loop_chance
+        self._carve(self.loop_chance)
 
         return
 
     def _build_grid(self) -> list[list[BaseTile]]:
 
-        max_x = self.width +1
+        max_x = self.width + 1
         max_y = self.height + 1
 
         def _wire_neighbours(rows: list[list[BaseTile]]) -> None:
@@ -34,24 +39,22 @@ class Maze():
                 for tile in r:
                     # link in every direction
                     for dir, (dx, dy) in DELTAS.items():
-                       nx, ny = tile.x + dx, tile.y + dy
+                        nx, ny = tile.x + dx, tile.y + dy
 
-                       if 0 <= nx <= max_x and 0 <= ny <= max_y:
-                           tile.neighbours[dir] = rows[ny][nx]
-
+                        if 0 <= nx <= max_x and 0 <= ny <= max_y:
+                            tile.neighbours[dir] = rows[ny][nx]
 
         def is_edge(x, y) -> bool:
             return x == 0 or x == max_x or y == 0 or y == max_y
-
 
         rows: list[list[BaseTile]] = []
         for y in range(max_y + 1):
             row: list[BaseTile] = []
             for x in range(max_x + 1):
                 if is_edge(x, y):
-                    row.append(Limit((x,y), self))
-                else :
-                    row.append(Tile((x,y), self))
+                    row.append(Limit((x, y), self))
+                else:
+                    row.append(Tile((x, y), self))
             rows.append(row)
 
         _wire_neighbours(rows)
