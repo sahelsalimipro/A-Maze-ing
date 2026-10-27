@@ -6,6 +6,7 @@ from tiles import BaseTile, Tile, Limit, LogoTile
 from dirs import DELTAS
 from carve import pick_endpoints, wilson
 from solvers import astar
+import globals
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +55,8 @@ class Maze():
         self.loop_chance = infos.loop_chance
         self.grid = self._build_grid()
         self._rng = Random(self.seed)
-        self._start, self._goal = pick_endpoints(self)
+        start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
+        self._start, self._goal = pick_endpoints(self, start, goal)
         self._carve(self.loop_chance)
 
         return

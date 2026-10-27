@@ -40,8 +40,11 @@ def parse_char(raw: str) -> str:
     return s
 
 
-def parse_coordinates(raw: str) -> tuple[int, int]:
-    parts = raw.strip().split(",")
+def parse_coordinates(raw: str) -> tuple[int, int] | None:
+    raw = raw.strip()
+    if raw.upper() == "NONE":
+        return None
+    parts = raw.split(",")
     if len(parts) != 2:
         raise ValueError(f"expected 'x,y', got {raw!r}")
 
