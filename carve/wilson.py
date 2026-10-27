@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from tiles import BaseTile
     from dirs import Direction
     from amazeing import Maze
-from dirs import DIRS
+from dirs import DIRS, OPP_DIR, PERPENDICULAR
 from .utils import carvable, carve, reachable
 
 
@@ -77,4 +77,23 @@ def braid(rng: random.Random, cells: list[BaseTile], p: float) -> None:
             if n is not None and n.wallscount == 3:
                 pref.append(d)
 
-        carve(t, rng.choice(pref or closed))
+        choice: Direction = rng.choice(pref or closed)
+        if would_open_room(t, choice):
+            continue
+        carve(t, choice)
+
+def would_open_room(t: BaseTile, d: Direction) -> bool:
+    """True if removing the wall between t and its neighbour d
+    would make some 2x2 group of tiles fully connected (a 'room')."""
+
+    n = t.neighbours[d]
+    assert n is not None
+    # the two squares that contain the edge t-n
+    for s in (PERPENDICULAR[d], OPP_DIR[PERPENDICULAR[d]]):
+        a, b = t.neighbours[s], n.neighbours[s]
+        if a is None or b is None or not (carvable(a) and carvable(b)):
+            continue
+        # the other three edges of the square must already be open
+        if (not t.walls[s]) and (not n.walls[s]) and (not a.walls[d]):
+            return True
+    return False

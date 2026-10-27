@@ -11,6 +11,11 @@ OPP_DIR: dict[Direction, Direction] = {
     "E": "W",
 }
 
+PERPENDICULAR: dict[Direction, Direction] = {
+    "N": "E", "S": "E",
+    "E": "N", "W": "N"
+}
+
 # (dx, dy), y grows downward (row index), so North is -1
 DELTAS: dict[Direction, tuple[int, int]] = {
     "N": (0, -1),
