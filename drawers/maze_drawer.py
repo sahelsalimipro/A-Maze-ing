@@ -3,11 +3,11 @@ from typing import TYPE_CHECKING, Any, Callable
 from .utils import _scale, _center
 from .base import Drawer
 from globals import JUNCTIONS_CHARS
+from amazeing import Maze
 
 if TYPE_CHECKING:
     from pixels import Pixel, PixelKind
-    from tiles import BaseTile
-    from amazeing import Maze
+    # from tiles import BaseTile
 
 
 # Index = bitmask of filled quadrants: UL=1, UR=2, LL=4, LR=8
@@ -60,8 +60,8 @@ def _content_placements(
     }
 
 
-def _is_logo(tile: BaseTile | None) -> bool:
-    return tile is not None and tile.isLogo
+# def _is_logo(tile: BaseTile | None) -> bool:
+#     return tile is not None and tile.isLogo
 
 
 class MazeDrawer(Drawer):

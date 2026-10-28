@@ -49,12 +49,12 @@ class Maze():
         self.height = dimensions[1]
 
         self.logo = logo_cells(self.width, self.height)
-        # self.has_logo = bool(self.logo)
 
         self.seed = infos.seed
         self.loop_chance = infos.loop_chance
         self.grid = self._build_grid()
         self._rng = Random(self.seed)
+
         start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
         self._start, self._goal = pick_endpoints(self, start, goal)
         self._carve(self.loop_chance)
