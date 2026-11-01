@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 import os
 
-from regions import Region
 from globals import MID_REGION_ORDER
 if TYPE_CHECKING:
+    from regions import Region
     from tiles import BaseTile
 
 

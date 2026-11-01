@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
 import random
 
@@ -6,7 +7,7 @@ if TYPE_CHECKING:
     from dirs import Direction
     from amazeing import Maze
 from dirs import DIRS, OPP_DIR, PERPENDICULAR
-from .utils import carvable, carve, reachable
+from .utils import carvable, carve
 
 
 def wilson(maze: Maze, start: BaseTile, loop_chance: float = 0.0) -> None:
@@ -16,7 +17,7 @@ def wilson(maze: Maze, start: BaseTile, loop_chance: float = 0.0) -> None:
                           get an extra wall opened (imperfect).
     """
     rng = maze._rng
-    cells = reachable(start)
+    cells = maze.components[maze.component_of[start]]
 
     in_maze: set[BaseTile] = {start}   # the root; any root gives an unbiased result
 

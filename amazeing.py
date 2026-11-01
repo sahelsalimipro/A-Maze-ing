@@ -4,7 +4,7 @@ from random import Random
 
 from tiles import BaseTile, Tile, Limit, LogoTile
 from dirs import DELTAS
-from carve import pick_endpoints, wilson
+from carve import pick_endpoints, wilson, find_components
 from solvers import astar
 import globals
 
@@ -53,6 +53,7 @@ class Maze():
         self.seed = infos.seed
         self.loop_chance = infos.loop_chance
         self.grid = self._build_grid()
+        self.components, self.component_of = find_components(self.grid)
         self._rng = Random(self.seed)
 
         start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
