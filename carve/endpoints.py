@@ -5,7 +5,6 @@ if TYPE_CHECKING:
     from amazeing import Maze
     from tiles import BaseTile
 from errors import ConfigErr
-from .utils import find_components, carvable
 
 Coord = tuple[int, int]
 
