@@ -2,7 +2,6 @@
 [Sahel/Basile]
 - Tester les animations
 - Readme + License
-- ajouter entry/exit manuel
 - MazeGenerator and packaging
 
 - Menu / gerer les inputs. **Long**
@@ -13,6 +12,7 @@
 
 [Basile]
 - TODOs
+- Finish rewrite
 
 [Sahel]
 - output_file
@@ -29,5 +29,6 @@
 - validation parametres
 - Logo 42
 - Makefile
+- ajouter entry/exit manuel
 - no isolated cell ? -> Wilson le fait parce qu'il connecte chaque carvable et reachable case a une region
 - no 3x3 ? -> Bah, j;avais oublie. C'est fait maintenant.

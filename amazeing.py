@@ -98,6 +98,7 @@ class Maze():
 
     def _carve(self, loop_chance: float) -> None:
         return wilson(self, self._start, loop_chance)
+        # return dfs()
 
     def resolve(self) -> None:
         path: list[BaseTile] | None = astar(self._start, self._goal)

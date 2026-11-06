@@ -24,6 +24,7 @@ class BaseTile(ABC):
     isLogo: bool
     isLimit: bool
     isSolution: bool
+    visited: bool
     neighbours: dict[Direction, BaseTile | None]
     walls: dict[Direction, bool]
     wallscount: int
@@ -42,6 +43,7 @@ class BaseTile(ABC):
         self.maze_ref = maze
         self.id = next(ID_GEN)
         self.isSolution = False
+        self.visited = False
         self.coords = coords
         self.x = coords[0]
         self.y = coords[1]

@@ -10,6 +10,10 @@ from amazeing import Maze, GenInfos
 from themes_loader import load_theme
 from render import clear_console, render, run
 
+from carve import pick_endpoints, wilson, dfs, find_components
+...
+    def _carve(self, loop_chance: float) -> None:
+        return dfs(self, self._start, loop_chance)
 
 if __name__ == "__main__":
     setup_logging()
