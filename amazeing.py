@@ -1,10 +1,11 @@
 import logging
 from collections import namedtuple
+from collections.abc import Callable
 from random import Random
 
 from tiles import BaseTile, Tile, Limit, LogoTile
 from dirs import DELTAS
-from carve import pick_endpoints, wilson, find_components
+from carve import pick_endpoints, wilson, find_components, dfs
 from solvers import astar
 import globals
 
@@ -58,7 +59,9 @@ class Maze():
 
         start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
         self._start, self._goal = pick_endpoints(self, start, goal)
-        self._carve(self.loop_chance)
+
+        # TODO implement choice of algo
+        self._carve(wilson, self.loop_chance)
 
         return
 
@@ -96,9 +99,8 @@ class Maze():
         _wire_neighbours(rows)
         return rows
 
-    def _carve(self, loop_chance: float) -> None:
-        return wilson(self, self._start, loop_chance)
-        # return dfs()
+    def _carve(self, algo: Callable[[Maze, Tile, float], None], loop_chance: float) -> None:
+        return algo(self, self._start, loop_chance)
 
     def resolve(self) -> None:
         path: list[BaseTile] | None = astar(self._start, self._goal)

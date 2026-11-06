@@ -29,7 +29,7 @@ def dfs(maze: Maze, start: BaseTile, loop_chance: float = 0.0) -> None:
         options: list[Direction] = []
         for d in DIRS:
             n = current.neighbours[d]
-            if n is not None and carvable(n) and not n.visited:
+            if carvable(n) and not n.visited:
                 options.append(d)
 
         if not options:

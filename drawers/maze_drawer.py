@@ -89,7 +89,7 @@ class MazeDrawer(Drawer):
     def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
         self.fill_buffer(buffer)
         self._colorize(buffer)
-        self._paint_logo(buffer)
+        # self._paint_logo(buffer)
         return
 
     def update(
