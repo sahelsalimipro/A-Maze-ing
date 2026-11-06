@@ -12,11 +12,6 @@ from menu import handle_inputs
 logger = logging.getLogger(__name__)
 
 
-def clear_console() -> None:
-    print("\033[H\033[J", end="")
-    return
-
-
 def update_dirty_pixels(regions: list[Region]) -> None:
     parts: list[str] = []
     # (row, col), 0-based, where the terminal cursor is now
