@@ -36,3 +36,5 @@ def astar(start: BaseTile, goal: BaseTile) -> list[BaseTile] | None:
                 came[nxt] = cur
                 heapq.heappush(open_, (c + h(nxt), nxt))
     return None
+
+# def bfs
