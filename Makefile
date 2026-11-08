@@ -1,7 +1,5 @@
-.PHONY: install, run, debug, clean, lint, lint-strict
+.PHONY: install run debug clean lint lint-strict
 
-install:
-	echo " Installing --- Done"
 
 run:
 	python a_maze_ing.py ".env"
@@ -9,6 +7,8 @@ run:
 debug:
 	python -m pdb a_maze_ing.py ".env"
 
+install:
+	@echo Installing --- Done
 
 clean:
 	find . -type d -name "__pycache__" -prune -exec rm -rf {} +
