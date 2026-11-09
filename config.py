@@ -1,4 +1,3 @@
-# config.py
 from __future__ import annotations
 import os
 import re
@@ -183,7 +182,7 @@ def load_config() -> Settings:
         raise ConfigErr()
 
     THEMEABLE: set[str] = set()
-    
+
     values: dict[str, Any] = {}
     critical_errors: list[str] = []
 

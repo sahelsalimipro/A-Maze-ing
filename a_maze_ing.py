@@ -1,6 +1,7 @@
 from typing import cast
 import sys
 
+import globals
 from logger import setup_logging
 from errors import ConfigErr, assert_rendering_dimensions, validate
 from regions import Region
@@ -20,8 +21,6 @@ if __name__ == "__main__":
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
 
-    import globals  # noqa: E402
-    assert config is not None
     globals.CONFIG = config
 
     clear_console()
