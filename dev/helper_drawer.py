@@ -1,5 +1,6 @@
-from typing import Any
+from collections.abc import Callable
 
+from config import Settings
 from drawers import Drawer
 from pixels import Pixel
 
@@ -11,7 +12,7 @@ class NumericalDrawer(Drawer):
     fg_clr = (30, 0, 60)
     bg_clr = (204, 255, 0)
 
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         for y, row in enumerate(buffer):
             for x, px in enumerate(row):
                 if y == 0 or y == len(buffer) - 1:
@@ -22,5 +23,10 @@ class NumericalDrawer(Drawer):
                 px.bg_clr = self.bg_clr
         return
 
-    def update(self, buffer: list[list[Pixel]], dt: float) -> None:
+    def update(
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return

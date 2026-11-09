@@ -6,6 +6,8 @@ import logging
 from dataclasses import dataclass
 from typing import Any, Callable
 import dotenv
+from collections import ChainMap
+from collections.abc import Iterator, Mapping
 
 from errors import ConfigErr
 
@@ -85,13 +87,6 @@ def parse_color(raw: str) -> tuple[int, int, int] | None:
             raise ValueError(f"color channel {name}={ch} out of range 0-255")
     return (r, g, b)
 
-#  obsolete -> themes checked later in themes_loader.py
-# def parse_theme_name(raw: str) -> str:
-#     s = parse_str(raw).lower()
-#     if s not in VALID_THEMES:
-#         raise ValueError(f"unknown theme {raw!r}, expected one of {sorted(VALID_THEMES)}")
-#     return s
-
 
 # ---------- Schema ---------- #
 @dataclass
@@ -99,18 +94,19 @@ class FieldSpec:
     key: str
     parser: Callable[[str], Any]
     default: Any
+    themeable: bool = True
     # True: bad/missing value aborts startup. False: log a warning + fall back to default.
     critical: bool = False
 
 
 FIELDS: list[FieldSpec] = [
-    FieldSpec("MAZE_WIDTH", parse_int, 20),
-    FieldSpec("MAZE_HEIGHT", parse_int, 15),
-    FieldSpec("SOLVED", parse_bool, False),
-    FieldSpec("SEED", parse_int, 42, critical=True),
-    FieldSpec("PERFECT", parse_bool, True, critical=True),
-    FieldSpec("ENTRY", parse_coordinates, None),
-    FieldSpec("EXIT", parse_coordinates, None),
+    FieldSpec("MAZE_WIDTH", parse_int, 20, themeable=False),
+    FieldSpec("MAZE_HEIGHT", parse_int, 15, themeable=False),
+    FieldSpec("SOLVED", parse_bool, False, themeable=False),
+    FieldSpec("SEED", parse_int, 42, themeable=False, critical=True),
+    FieldSpec("PERFECT", parse_bool, True, themeable=False, critical=True),
+    FieldSpec("ENTRY", parse_coordinates, None, themeable=False),
+    FieldSpec("EXIT", parse_coordinates, None, themeable=False),
 
     FieldSpec("TILE_RATIO", parse_tile_ratio, (3, 1), critical=True),
     FieldSpec("CENTER_MAZE", parse_bool, True),
@@ -146,20 +142,56 @@ FIELDS: list[FieldSpec] = [
     FieldSpec("BANNER_CORNER_BOTLEFT_CHAR", parse_char, "└"),
     FieldSpec("BANNER_CORNER_BOTRIGHT_CHAR", parse_char, "┘"),
 
-    FieldSpec("THEME_ON", parse_bool, False),
-    FieldSpec("THEME_NAME", parse_str, "default"),
+    FieldSpec("THEME_ON", parse_bool, False, themeable=False),
+    FieldSpec("THEME_NAME", parse_str, "default", themeable=False),
 ]
 
+class Settings(Mapping[str, Any]):
+    """Read-only for consumers. Lookup order: runtime > theme > base."""
 
-def load_config() -> dict[str, Any]:
+    def __init__(self, base: Mapping[str, Any], themeable: frozenset[str]) -> None:
+        self._themeable = themeable
+        self._theme: dict[str, Any] = {}
+        self._runtime: dict[str, Any] = {}
+        self._chain: ChainMap[str, Any] = ChainMap(
+            self._runtime, self._theme, dict(base))   # private copy of base
+
+    def __getitem__(self, key: str) -> Any:
+        return self._chain[key]
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._chain)
+
+    def __len__(self) -> int:
+        return len(self._chain)
+
+    def set(self, key: str, value: Any) -> None:       # the only runtime write path
+        if key not in self._chain:
+            raise KeyError(key)
+        self._runtime[key] = value
+
+    def apply_theme(self, overrides: Mapping[str, Any]) -> None:
+        if bad := overrides.keys() - self._themeable:
+            raise ConfigErr(f"Theme overrides non-themeable keys: {sorted(bad)}")
+        self._theme.clear()
+        self._theme.update(overrides)
+        for key in self._runtime.keys() & self._themeable:   # drop stale recolors
+            del self._runtime[key]
+
+def load_config() -> Settings:
     if not dotenv.load_dotenv():
         raise ConfigErr()
 
+    THEMEABLE: set[str] = set()
+    
     values: dict[str, Any] = {}
     critical_errors: list[str] = []
 
     for spec in FIELDS:
         raw = os.getenv(spec.key)
+
+        if spec.themeable == True:
+            THEMEABLE.add(spec.key)
 
         if raw is None:
             if spec.critical:
@@ -184,4 +216,4 @@ def load_config() -> dict[str, Any]:
         raise ConfigErr("Invalid configuration:\n" +
                         "\n".join(f"  - {e}" for e in critical_errors))
 
-    return values
+    return Settings(values, frozenset(THEMEABLE))

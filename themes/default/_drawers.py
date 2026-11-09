@@ -1,9 +1,10 @@
-from typing import Any, cast, Callable
+from typing import Callable
 
 from drawers import Drawer, MazeDrawer
 from pixels import Pixel
 from globals import BANNER_HEIGHT, MID_WIDTH
 from drawers import _center, _fill_sequence
+from config import Settings
 
 
 class BaseDrawer(Drawer):
@@ -12,7 +13,7 @@ class BaseDrawer(Drawer):
         self._bg_clr = bg_clr
         return
 
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         for row in buffer:
             for px in row:
                 px.bg_clr = self._bg_clr
@@ -28,7 +29,7 @@ class BaseDrawer(Drawer):
 
 class BannerDrawer(Drawer):
 
-    def __init__(self, config: dict[str, Any]) -> None:
+    def __init__(self, config: Settings) -> None:
         self._title = config["BANNER_TITLE"]
         self._clr_fg = config["BANNER_TITLE_CLR"]
         self._clr_bckg = config["BANNER_BCKG_CLR"]
@@ -46,7 +47,7 @@ class BannerDrawer(Drawer):
         }
         return
 
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         height = len(buffer)
         if height == 0:
             return
@@ -108,7 +109,7 @@ class BannerDrawer(Drawer):
         return
 
 class DefaultMazeDrawer(MazeDrawer):
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         return super().draw(buffer, config)
 
     def update(

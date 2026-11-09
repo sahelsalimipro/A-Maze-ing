@@ -5,12 +5,13 @@ from drawers import EmptyDrawer, MenuDrawer
 from ._drawers import BaseDrawer, BannerDrawer, DefaultMazeDrawer
 from amazeing import Maze
 from menu import COMMANDS
+from config import Settings
 if TYPE_CHECKING:
     from drawers import Drawer
 # from dev.helper_drawer import NumericalDrawer
 
 
-def register(config: dict[str, Any], maze: Maze) -> dict[str, Drawer]:
+def register(config: Settings, maze: Maze) -> dict[str, Drawer]:
 
     padd_top_bg_clr = config["TOP_PADDING_CLR"]
     padd_bot_bg_clr = config["BOT_PADDING_CLR"]

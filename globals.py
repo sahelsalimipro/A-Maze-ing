@@ -1,10 +1,12 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from os import get_terminal_size, terminal_size
-from typing import Literal, Any
 
-# from menu import Command, INPUT_COMMAND, COMMANDS, COMMAND_TABLE
+if TYPE_CHECKING:
+    from config import Settings
 
 # ----------     config    ---------- #
-CONFIG: dict[str, Any]
+CONFIG: Settings
 
 # ----------   Rendering   ---------- #
 FPS: int = 12

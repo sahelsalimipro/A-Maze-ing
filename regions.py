@@ -6,6 +6,7 @@ from pixels import Pixel
 
 if TYPE_CHECKING:
     from dimensions import Rect
+    from config import Settings
 
 
 class Region():
@@ -35,7 +36,7 @@ class Region():
         self.drawer = drawer
 
     # Rendering called
-    def fill_buffer(self, config: dict[str, Any]) -> None:
+    def fill_buffer(self, config: Settings) -> None:
         if not self.drawer:
             raise NotImplementedError("Drawer undefined")
 

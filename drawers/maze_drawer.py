@@ -1,13 +1,14 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Callable
 
-from .utils import _scale, _center
+from .utils import _scale
 from .base import Drawer
 from globals import JUNCTIONS_CHARS
 from amazeing import Maze
 
 if TYPE_CHECKING:
     from pixels import Pixel, PixelKind
+    from config import Settings
     # from tiles import BaseTile
 
 
@@ -61,12 +62,8 @@ def _content_placements(
     }
 
 
-# def _is_logo(tile: BaseTile | None) -> bool:
-#     return tile is not None and tile.isLogo
-
-
 class MazeDrawer(Drawer):
-    def __init__(self, maze: Maze, config: dict[str, Any]) -> None:
+    def __init__(self, maze: Maze, config: Settings) -> None:
         self.maze = maze
         self.ratio: tuple[int, int] = config["TILE_RATIO"]
         self.bg_clr: tuple[int, int, int] = config["BACKGROUND_CLR"]
@@ -86,10 +83,10 @@ class MazeDrawer(Drawer):
         self._goal_char = config["EXITPOINT_CHAR"]
         return
 
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         self.fill_buffer(buffer)
         self._colorize(buffer)
-        # self._paint_logo(buffer)
+        self._paint_logo(buffer)
         return
 
     def update(

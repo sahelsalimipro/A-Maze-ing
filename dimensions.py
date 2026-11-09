@@ -38,7 +38,7 @@ def _split_horizontal_space(
     )
 
 
-def resolve_dimensions(config: dict[str, Any]) -> dict[str, Rect]:
+def resolve_dimensions(config: Settings) -> dict[str, Rect]:
     ratio_x, ratio_y = config["TILE_RATIO"]
     ct_cols = config["MAZE_WIDTH"]   # doesn't include Limit border tiles
     ct_rows = config["MAZE_HEIGHT"]

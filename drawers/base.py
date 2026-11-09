@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
-from typing import Any, Callable
+from typing import Callable
 
 from pixels import Pixel
 from .utils import _center
 from menu import compute_menu_layout, Command, MenuLayout, COMMANDS, MenuRenderingCtx
-
+from config import Settings
 
 class Drawer(ABC):
 
     @abstractmethod
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         ...
 
     @abstractmethod
@@ -26,7 +26,7 @@ class Drawer(ABC):
 class EmptyDrawer(Drawer):
     """Draws empty space in default terminal color"""
 
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         return
 
     def update(
@@ -53,7 +53,7 @@ class MenuDrawer(Drawer):
         for i, ch in enumerate(text):
             buffer[y][x + i].char = ch
 
-    def draw(self, buffer: list[list[Pixel]], config: dict[str, Any]) -> None:
+    def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         width = len(buffer[0])
         lay = self.layout = compute_menu_layout(self.commands, width)
         self._put(buffer, 0, 0, " Actions ".center(width, "-"))

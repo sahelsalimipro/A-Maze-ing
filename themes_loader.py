@@ -1,8 +1,7 @@
 from __future__ import annotations
 from importlib import import_module
 from types import ModuleType
-
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 import logging
 import inspect
 
@@ -10,10 +9,11 @@ from errors import ConfigErr
 if TYPE_CHECKING:
     from amazeing import Maze
     from drawers import Drawer
+    from config import Settings
 
 logger = logging.getLogger(__name__)
 
-def load_theme(name: str, config: dict[str, Any], maze: Maze) -> dict[str, Drawer]:
+def load_theme(name: str, config: Settings, maze: Maze) -> dict[str, Drawer]:
     module_name = f"themes.{name}"
     try:
         module: ModuleType = import_module(module_name)

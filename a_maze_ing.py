@@ -1,10 +1,10 @@
-from typing import Any, cast
+from typing import cast
 import sys
 
 from logger import setup_logging
 from errors import ConfigErr, assert_rendering_dimensions, validate
 from regions import Region
-from config import load_config
+from config import load_config, Settings
 from dimensions import resolve_dimensions
 from amazeing import Maze, GenInfos
 from themes_loader import load_theme
@@ -12,7 +12,7 @@ from render import clear_console, render, run
 
 if __name__ == "__main__":
     setup_logging()
-    config: dict[str, Any] | None = None
+    config: Settings | None = None
     try:
         config = load_config()
         validate(config)

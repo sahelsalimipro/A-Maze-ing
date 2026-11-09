@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 import os
 
 from globals import MID_REGION_ORDER
 if TYPE_CHECKING:
     from regions import Region
     from tiles import BaseTile
+    from config import Settings
 
 
 class InvalidTileErr(ValueError):
@@ -64,7 +65,7 @@ def assert_rendering_dimensions(regions: dict[str, Region]) -> None:
         )
 
 
-def validate(config: dict[str, Any]) -> None:
+def validate(config: Settings) -> None:
 
     def _is_below(val, below) -> bool:
         return val < below
