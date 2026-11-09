@@ -60,3 +60,4 @@
 2026-11-06 19:15:37,373 [WARNING] config: BANNER_CORNER_BOTLEFT_CHAR='"└" # str - len 1' is invalid (expected exactly 1 character, got '"└" # str - len 1'), using default '└'
 2026-11-06 19:15:37,373 [WARNING] config: BANNER_CORNER_BOTRIGHT_CHAR='"┘" # str - len 1' is invalid (expected exactly 1 character, got '"┘" # str - len 1'), using default '┘'
 2026-11-06 19:15:37,373 [WARNING] config: THEME_ON='FALSE # bool' is invalid (expected TRUE or FALSE, got 'FALSE # bool'), using default False
+2026-11-09 19:09:28,228 [WARNING] config: MAZE_WIDTH='-5' is invalid (Negative value), using default 20
