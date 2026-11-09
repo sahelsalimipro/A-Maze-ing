@@ -3,6 +3,7 @@
 - Tester les animations
 - Readme + License
 - MazeGenerator and packaging
+- choice of solver/carver
 
 - Menu / gerer les inputs. **Long**
     [Sahel/Basile.Menu]
@@ -16,7 +17,6 @@
 
 [Sahel]
 - output_file
-- solver + carver
 
 
 [Optionel]
@@ -32,3 +32,4 @@
 - ajouter entry/exit manuel
 - no isolated cell ? -> Wilson le fait parce qu'il connecte chaque carvable et reachable case a une region
 - no 3x3 ? -> Bah, j;avais oublie. C'est fait maintenant.
+- solver + carver

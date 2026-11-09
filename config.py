@@ -148,6 +148,7 @@ FIELDS: list[FieldSpec] = [
 
     FieldSpec("THEME_ON", parse_bool, False),
     FieldSpec("THEME_NAME", parse_str, "default"),
+    FieldSpec("OUTPUT_FILE", parse_str, "maze.txt"),
 ]
 
 

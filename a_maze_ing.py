@@ -35,6 +35,11 @@ if __name__ == "__main__":
     # Creating the maze
     gen_infos = GenInfos(config["SEED"], 0 if config["PERFECT"] else 8)
     maze = Maze((config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), gen_infos)
+    try:
+        write_output(maze, config["OUTPUT_FILE"])
+    except (OSError, ValueError) as e:
+        print(f"Error writing output file: {e}")
+        sys.exit(1)
 
     # Prepares the drawers, responsible for rendering
     drawers = load_theme(cast(str, config.get("THEME_NAME")), config, maze)
@@ -58,3 +63,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"RuntimeError: {e}")
+
+    # finally:
+        
+        
