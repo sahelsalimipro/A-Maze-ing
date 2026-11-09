@@ -1,11 +1,10 @@
 from collections import deque
 from tiles import BaseTile
 from dirs import DIRS, OPP_DIR, Direction
+from typing import TypeGuard
 
-
-def carvable(t: BaseTile | None) -> bool:
+def carvable(t: BaseTile | None) -> TypeGuard[BaseTile]:
     return t is not None and not t.isLimit and not t.isLogo
-
 
 def carve(tile: BaseTile, d: Direction) -> None:
     other = tile.neighbours[d]

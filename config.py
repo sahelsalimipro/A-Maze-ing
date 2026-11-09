@@ -211,6 +211,7 @@ FIELDS: list[FieldSpec] = [
 
     FieldSpec("THEME_ON", BOOL, False, themeable=False),
     FieldSpec("THEME_NAME", STR, "default", themeable=False),
+    FieldSpec("OUTPUT_FILE", STR, "maze.txt")
 ]
 
 SPECS: dict[str, FieldSpec] = {f.key: f for f in FIELDS}

@@ -11,6 +11,7 @@ from dimensions import resolve_dimensions
 from amazeing import Maze, GenInfos
 from themes_loader import load_theme_module, load_theme
 from render import clear_console, render, run
+from output_file import write_output
 
 if __name__ == "__main__":
     config: Settings
@@ -42,6 +43,11 @@ if __name__ == "__main__":
     # Creating the maze
     gen_infos = GenInfos(config["SEED"], 0 if config["PERFECT"] else 8)
     maze = Maze((config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), gen_infos)
+    try:
+        write_output(maze, config["OUTPUT_FILE"])
+    except (OSError, ValueError) as e:
+        print(f"Error writing output file: {e}")
+        sys.exit(1)
 
     # Prepares the drawers, responsible for rendering
     drawers = load_theme(module, config, maze)
@@ -59,7 +65,7 @@ if __name__ == "__main__":
         render(regions)
         run(list(regions.values()))
 
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         clear_console()
         print(f"\n\n{'Goodbye user!':^24}\n\n")
 

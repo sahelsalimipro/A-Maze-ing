@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 from collections import namedtuple
 from collections.abc import Callable
@@ -9,12 +10,13 @@ from carve import pick_endpoints, wilson, find_components, dfs
 from solvers import astar
 import globals
 
+
 logger = logging.getLogger(__name__)
 
 
 LOGO_42: tuple[str, ...] = (
     "#...###",
-    "#.#...#",
+    "#.....#",
     "###.###",
     "..#.#..",
     "..#.###",
@@ -56,6 +58,7 @@ class Maze():
         self.grid = self._build_grid()
         self.components, self.component_of = find_components(self.grid)
         self._rng = Random(self.seed)
+        
 
         start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
         self._start, self._goal = pick_endpoints(self, start, goal)
@@ -99,7 +102,7 @@ class Maze():
         _wire_neighbours(rows)
         return rows
 
-    def _carve(self, algo: Callable[[Maze, Tile, float], None], loop_chance: float) -> None:
+    def _carve(self, algo: Callable[[Maze, BaseTile, float], None], loop_chance: float) -> None:
         return algo(self, self._start, loop_chance)
 
     def resolve(self) -> None:
