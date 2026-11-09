@@ -58,13 +58,9 @@ if __name__ == "__main__":
         render(regions)
         run(list(regions.values()))
 
-    except KeyboardInterrupt as e:
+    except KeyboardInterrupt:
         clear_console()
         print(f"\n\n{'Goodbye user!':^24}\n\n")
 
     except Exception as e:
         print(f"RuntimeError: {e}")
-
-    # finally:
-        
-        

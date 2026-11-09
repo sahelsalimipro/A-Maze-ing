@@ -9,8 +9,6 @@ if TYPE_CHECKING:
     from amazeing import Maze
     from tiles import BaseTile
 
-
-
 # One bit per wall: N=1, E=2, S=4, W=8 (subject, section 4.5)
 WALL_BITS: dict[Direction, int] = {"N": 1, "E": 2, "S": 4, "W": 8}
 
