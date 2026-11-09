@@ -13,13 +13,28 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-def load_theme(name: str, config: Settings, maze: Maze) -> dict[str, Drawer]:
+def load_theme_module(name: str) -> ModuleType:
+    """Loads theme module, raises ConfigErr if not found"""
+
     module_name = f"themes.{name}"
     try:
         module: ModuleType = import_module(module_name)
     except ModuleNotFoundError as e:
-        raise ConfigErr(f"Unknown theme {name!r}") from e
+        if e.name == module_name:  # the theme itself doesn't exist
+            raise ConfigErr(f"Unknown theme {name!r}") from e
+        raise ConfigErr(
+            f"Theme {name!r} failed to import: missing module {e.name!r}"
+        ) from e
 
+    return module
+
+
+def load_theme(module: ModuleType, config: Settings, maze: Maze) -> dict[str, Drawer]:
+    """Executes "register" function in the given theme module.
+    Raises ConfigErr if signature incorrect or missing"""
+
+    # name = "pac_man" if module is "themes.pac_man"
+    name = module.__name__.rpartition(".")[2]
     register = getattr(module, "register", None)
     if not callable(register):
         raise ConfigErr(f"Theme {name!r} has no register() function")

@@ -2,7 +2,6 @@ from typing import Callable
 
 from drawers import Drawer, MazeDrawer
 from pixels import Pixel
-from globals import BANNER_HEIGHT, MID_WIDTH
 from drawers import _center, _fill_sequence
 from config import Settings
 
@@ -65,7 +64,7 @@ class BannerDrawer(Drawer):
                       _fill_sequence(self._borders["top"], width - 2) +
                       self._corners["top-right"]
                     )
-    
+
         self._set_row(buffer[-1],
                       self._corners["bottom-left"] +
                       _fill_sequence(self._borders["bottom"], width - 2) +
@@ -97,7 +96,7 @@ class BannerDrawer(Drawer):
         px.char = ch
         px.fg_clr = self._clr_fg
         px.bg_clr = self._clr_bckg
-        
+
         return
 
     def update(

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import os
 
-from globals import MID_REGION_ORDER
+import globals
 if TYPE_CHECKING:
     from regions import Region
     from tiles import BaseTile
@@ -35,12 +35,13 @@ class ConfigErr(Exception):
                 msg = "Error empty config"
             else:
                 msg = "Unknown config error"
-        super().__init__(msg, config)
+        super().__init__(msg)
+        self.config = config
 
 
 def assert_rendering_dimensions(regions: dict[str, Region]) -> None:
     mid_regions = [
-        regions[name] for name in MID_REGION_ORDER if name in regions
+        regions[name] for name in globals.MID_REGION_ORDER if name in regions
     ]
 
     if not mid_regions:

@@ -1,5 +1,6 @@
 from typing import cast
 import sys
+from types import ModuleType
 
 import globals
 from logger import setup_logging
@@ -8,20 +9,27 @@ from regions import Region
 from config import load_config, Settings
 from dimensions import resolve_dimensions
 from amazeing import Maze, GenInfos
-from themes_loader import load_theme
+from themes_loader import load_theme_module, load_theme
 from render import clear_console, render, run
 
 if __name__ == "__main__":
+    config: Settings
+    module: ModuleType
+
     setup_logging()
-    config: Settings | None = None
     try:
         config = load_config()
+        theme_name = config["THEME_NAME"] if config["THEME_ON"] else "default"
+        module = load_theme_module(theme_name)
+        overrides = getattr(module, "OVERRIDES", {})
+        config.apply_theme(overrides)
         validate(config)
+        globals.CONFIG = config
+
     except ConfigErr as e:
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
 
-    globals.CONFIG = config
 
     clear_console()
 
@@ -36,7 +44,7 @@ if __name__ == "__main__":
     maze = Maze((config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), gen_infos)
 
     # Prepares the drawers, responsible for rendering
-    drawers = load_theme(cast(str, config.get("THEME_NAME")), config, maze)
+    drawers = load_theme(module, config, maze)
 
     try:
         if __debug__:
