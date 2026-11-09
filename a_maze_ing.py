@@ -9,6 +9,7 @@ from dimensions import resolve_dimensions
 from amazeing import Maze, GenInfos
 from themes_loader import load_theme
 from render import clear_console, render, run
+from output_file import write_output
 
 if __name__ == "__main__":
     setup_logging()
