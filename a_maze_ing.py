@@ -1,4 +1,3 @@
-from typing import cast
 import sys
 from types import ModuleType
 
@@ -41,7 +40,7 @@ if __name__ == "__main__":
     }
 
     # Creating the maze
-    gen_infos = GenInfos(config["SEED"], 0 if config["PERFECT"] else 8)
+    gen_infos = GenInfos(config["SEED"], config.get("PERFECT", False))
     maze = Maze((config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), gen_infos)
     try:
         write_output(maze, config["OUTPUT_FILE"])

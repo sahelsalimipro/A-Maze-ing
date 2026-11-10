@@ -6,15 +6,11 @@ if TYPE_CHECKING:
     from dirs import Direction
     from amazeing import Maze
 from dirs import DIRS
-from .utils import carvable, carve
-from .wilson import braid
+from .utils import carvable, carve, braid
 
 
-def dfs(maze: Maze, start: BaseTile, loop_chance: float = 0.0) -> None:
-    """Carve a maze in the region reachable from `start` (recursive backtracker).
-    loop_chance == 0.0 -> perfect maze.
-    loop_chance  > 0.0 -> perfect maze, then braided like in wilson().
-    """
+def dfs(maze: Maze, start: BaseTile, perfect: bool) -> None:
+    """Carve a maze in the region reachable from `start`."""
     rng = maze._rng
     cells = maze.components[maze.component_of[start]]
 
@@ -43,5 +39,5 @@ def dfs(maze: Maze, start: BaseTile, loop_chance: float = 0.0) -> None:
         nxt.visited = True
         stack.append(nxt)
 
-    if loop_chance > 0.0:
-        braid(rng, cells, loop_chance)
+    if not perfect:
+        braid(rng, cells)

@@ -13,7 +13,6 @@
 
 [Basile]
 - TODOs
-- Finish rewrite
 
 [Sahel]
 - output_file
@@ -33,3 +32,4 @@
 - no isolated cell ? -> Wilson le fait parce qu'il connecte chaque carvable et reachable case a une region
 - no 3x3 ? -> Bah, j;avais oublie. C'est fait maintenant.
 - solver + carver
+- Finish rewrite
