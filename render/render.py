@@ -11,16 +11,23 @@ from menu import handle_inputs
 
 logger = logging.getLogger(__name__)
 
+_scrolled: int = 0          # layout rows pushed into the scrollback by the first print
 
 def update_dirty_pixels(regions: list[Region]) -> None:
     parts: list[str] = []
     # (row, col), 0-based, where the terminal cursor is now
     cursor: tuple[int, int] | None = None
+    max_col = globals.TERMINAL_SIZE.columns
 
     for region in regions:
         ox, oy = region.origin
         for x, y in region.consume_dirty():  # sorted by row, then column
-            target = (oy + y, ox + x)
+            # OLD:
+            # target = (oy + y, ox + x)
+            # NEW:
+            target = (oy + y - _scrolled, ox + x)
+            if target[0] < 0 or target[1] >= max_col: # in scrollback (can't redraw)
+                continue
 
             if cursor != target:             # skip the move if we're already there
                 parts.append(f"\033[{target[0] + 1};{target[1] + 1}H")
@@ -61,7 +68,13 @@ def render(regions: dict[str, Region]) -> None:
 
     for row in regions["menu"].buf:
         lines.append("".join(px_to_str(px) for px in row))
-    print("\n".join(lines))
+    # OLD:
+    # print("\n".join(lines))
+    # NEW:
+    global _scrolled
+    _scrolled = max(0, len(lines) - globals.TERMINAL_SIZE.lines)
+    sys.stdout.write("\n".join(lines))      # no trailing newline, it would scroll one extra row
+    sys.stdout.flush()
 
 
 def run(regions: list[Region]) -> None:
