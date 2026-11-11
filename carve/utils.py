@@ -1,7 +1,8 @@
+from __future__ import annotations
+from typing import TypeGuard, TYPE_CHECKING
 from collections import deque
 from tiles import BaseTile
 from dirs import DIRS, OPP_DIR, Direction
-from typing import TypeGuard, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from random import Random

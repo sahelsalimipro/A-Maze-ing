@@ -1,9 +1,12 @@
-from typing import NamedTuple, Any
+from __future__ import annotations
+from typing import NamedTuple, TYPE_CHECKING
 
 from drawers import _total_buf
 from menu import compute_menu_layout, COMMANDS
 import globals
 
+if TYPE_CHECKING:
+    from config import Settings
 
 class Rect(NamedTuple):
     x: int
