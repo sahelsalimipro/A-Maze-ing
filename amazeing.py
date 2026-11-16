@@ -7,7 +7,7 @@ from random import Random
 from tiles import BaseTile, Tile, Limit, LogoTile
 from dirs import DELTAS
 from carve import pick_endpoints, wilson, find_components, dfs
-from solvers import astar
+from solvers import astar, bfs
 import globals
 
 
@@ -63,8 +63,11 @@ class Maze():
         start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
         self._start, self._goal = pick_endpoints(self, start, goal)
 
-        # TODO implement choice of algo
-        self._carve(wilson)
+        if globals.CONFIG["CARVER_ALGO"].lower() == "wilson":
+            self._carve(wilson)
+        else:
+            self._carve(dfs)
+            
 
         return
 
@@ -106,7 +109,12 @@ class Maze():
         return algo(self, self._start, self.is_perfect)
 
     def resolve(self) -> None:
-        path: list[BaseTile] | None = astar(self._start, self._goal)
+        path: list[BaseTile] | None = None
+        if globals.CONFIG["SOLVER_ALGO"].lower() == "astar":
+            path = astar(self._start, self._goal)
+        else:
+            path = bfs(self._start, self._goal)
+
         if path is None:
             logger.error("Created maze without a solution")
             raise ValueError("No path between starting point and end point")

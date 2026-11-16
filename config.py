@@ -174,6 +174,9 @@ FIELDS: list[FieldSpec] = [
     FieldSpec("PERFECT", BOOL, True, themeable=False, critical=True),
     FieldSpec("ENTRY", COORD, None, themeable=False),
     FieldSpec("EXIT", COORD, None, themeable=False),
+    FieldSpec("CARVER_ALGO", STR, True, themeable=False, critical=True),
+    FieldSpec("SOLVER_ALGO", STR, True, themeable=False, critical=True),
+
 
     FieldSpec("TILE_RATIO", RATIO, (3, 1), critical=True),
     FieldSpec("CENTER_MAZE", BOOL, True),

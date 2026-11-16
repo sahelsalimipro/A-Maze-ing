@@ -86,4 +86,17 @@ def validate(config: Settings) -> None:
 #             f"Tile ratio specified {tile_ratio[0]},{tile_ratio[1]}\
 #  too small, min 1,1"
 #         )
+    carver = config.get("CARVER_ALGO", str()).lower()
+    solver = config.get("SOLVER_ALGO", str()).lower()
+
+    if carver != "dfs" and carver != "wilson":
+        raise ConfigErr(
+            f"Invalid carver provided: {carver!r}. Valid carvers are: 'dfs', 'wilson'."
+        )
+
+    if solver != "bfs" and solver != "astar":
+        raise ConfigErr(
+            f"Invalid solver provided: {solver!r}. Valid solvers are: 'bfs', 'astar'."
+        )
+
     # TODO validate theme name.

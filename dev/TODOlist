@@ -3,7 +3,6 @@
 - Tester les animations
 - Readme + License
 - MazeGenerator and packaging
-- choice of solver/carver
 
 - Menu / gerer les inputs. **Long**
     [Sahel/Basile.Menu]
@@ -15,7 +14,6 @@
 - TODOs
 
 [Sahel]
-- output_file
 
 
 [Optionel]
@@ -33,3 +31,5 @@
 - no 3x3 ? -> Bah, j;avais oublie. C'est fait maintenant.
 - solver + carver
 - Finish rewrite
+- choice of solver/carver
+- output_file
