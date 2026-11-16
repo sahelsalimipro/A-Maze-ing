@@ -1,4 +1,4 @@
-.PHONY: install run debug clean lint lint-strict
+.PHONY: install run debug clean lint lint-strict build
 
 
 run:
@@ -25,3 +25,8 @@ lint:
 lint-strict:
 	-flake8 .
 	mypy . --strict
+
+build:
+	python3 -m pip install --upgrade build
+	python3 -m build
+	cp dist/mazegen-*.whl .
