@@ -2,8 +2,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Literal, Generator, TYPE_CHECKING
 
-from errors import InvalidTileErr
-from dirs import DIRS, OPP_DIR, Direction
+from .errors import InvalidTileErr
+from .dirs import DIRS, Direction
 if TYPE_CHECKING:
     from amazeing import Maze
 

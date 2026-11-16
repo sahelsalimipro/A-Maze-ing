@@ -1,17 +1,12 @@
 from __future__ import annotations
-import logging
-from collections import namedtuple
 from collections.abc import Callable
 from random import Random
 
-from tiles import BaseTile, Tile, Limit, LogoTile
-from dirs import DELTAS
-from carve import pick_endpoints, wilson, find_components, dfs
-from solvers import astar, bfs
-import globals
-
-
-logger = logging.getLogger(__name__)
+from .tiles import BaseTile, Tile, Limit, LogoTile
+from .dirs import DELTAS
+from .carve import pick_endpoints, wilson, find_components, dfs
+from .solvers import astar, bfs
+from .errors import MazeErr
 
 
 LOGO_42: tuple[str, ...] = (
@@ -42,32 +37,36 @@ def logo_cells(
     }
 
 
-GenInfos = namedtuple('GenInfos', ['seed', 'is_perfect'])
-
-
 class Maze():
-    def __init__(self, dimensions: tuple[int, int], infos: GenInfos) -> None:
-        self.dimensions = dimensions
-        self.width = dimensions[0]
-        self.height = dimensions[1]
+    def __init__(
+            self, width, height,
+            seed=None, perfect=True,
+            entry=None, exit=None,
+            carver="dfs", solver="bfs"
+        ) -> None:
+
+        self.dimensions = width, height
+        self.width = width
+        self.height = height
 
         self.logo = logo_cells(self.width, self.height)
 
-        self.seed = infos.seed
-        self.is_perfect = infos.is_perfect
+        self.seed = seed
+        self.is_perfect = perfect
         self.grid = self._build_grid()
         self.components, self.component_of = find_components(self.grid)
         self._rng = Random(self.seed)
         
 
-        start, goal = globals.CONFIG.get("ENTRY"), globals.CONFIG.get("EXIT")
+        start, goal = entry, exit
         self._start, self._goal = pick_endpoints(self, start, goal)
 
-        if globals.CONFIG["CARVER_ALGO"].lower() == "wilson":
+        if carver == "wilson":
             self._carve(wilson)
         else:
             self._carve(dfs)
-            
+
+        self._solver = solver
 
         return
 
@@ -110,14 +109,13 @@ class Maze():
 
     def resolve(self) -> None:
         path: list[BaseTile] | None = None
-        if globals.CONFIG["SOLVER_ALGO"].lower() == "astar":
+        if self._solver == "astar":
             path = astar(self._start, self._goal)
         else:
             path = bfs(self._start, self._goal)
 
         if path is None:
-            logger.error("Created maze without a solution")
-            raise ValueError("No path between starting point and end point")
+            raise MazeErr("No path between starting point and end point")
         for t in path:
             t.isSolution = True
         return

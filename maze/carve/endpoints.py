@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from amazeing import Maze
-    from tiles import BaseTile
-from errors import ConfigErr
+    from ..amazeing import Maze
+    from ..tiles import BaseTile
+from ..errors import MazeErr
 
 Coord = tuple[int, int]
 
@@ -28,13 +28,13 @@ def _resolve(maze: Maze, coord: Coord | None, label: str) -> BaseTile | None:
         return None
     x, y = coord
     if not (0 <= x < maze.width and 0 <= y < maze.height):
-        raise ConfigErr(
+        raise MazeErr(
             f"{label} {coord} is outside the maze "
             f"(x: 0-{maze.width - 1}, y: 0-{maze.height - 1}). {_hint(label)}"
         )
     tile = maze.grid[y + 1][x + 1]          # +1: Limit ring; grid is [row][col]
     if tile.isLogo:
-        raise ConfigErr(f"{label} {coord} is on a logo tile. {_hint(label)}")
+        raise MazeErr(f"{label} {coord} is on a logo tile. {_hint(label)}")
     return tile
 
 
@@ -42,7 +42,7 @@ def _pick_near(maze: Maze, anchor: BaseTile, label: str) -> BaseTile:
     """Pick the missing endpoint in the anchor's component (border preferred)."""
     others = [t for t in maze.components[maze.component_of[anchor]] if t is not anchor]
     if not others:
-        raise ConfigErr(
+        raise MazeErr(
             f"{label} {_coord(anchor)} is isolated by the logo: no other tile "
             f"can be reached. {_hint(label)}"
         )
@@ -58,12 +58,12 @@ def pick_endpoints(
 
     if start is not None and goal is not None:
         if start is goal:
-            raise ConfigErr(
+            raise MazeErr(
                 f"ENTRY and EXIT are the same tile {_coord(start)}. "
                 f"Pick different coordinates, or set one of them to NONE."
             )
         if maze.component_of[start] != maze.component_of[goal]:
-            raise ConfigErr(
+            raise MazeErr(
                 f"ENTRY {_coord(start)} and EXIT {_coord(goal)} are not connected "
                 f"(the logo separates them). Move one, or set one of them to NONE."
             )

@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from tiles import BaseTile
-    from dirs import Direction
-    from amazeing import Maze
-from dirs import DIRS
+    from ..tiles import BaseTile
+    from ..dirs import Direction
+    from ..amazeing import Maze
+from ..dirs import DIRS
 from .utils import carvable, carve, braid
 
 

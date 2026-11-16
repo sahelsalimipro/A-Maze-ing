@@ -1,6 +1,6 @@
 import heapq
-from tiles import BaseTile
-from dirs import DIRS
+from .tiles import BaseTile
+from .dirs import DIRS
 from collections import deque
 
 

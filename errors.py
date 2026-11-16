@@ -5,22 +5,7 @@ import os
 import globals
 if TYPE_CHECKING:
     from regions import Region
-    from tiles import BaseTile
     from config import Settings
-
-
-class InvalidTileErr(ValueError):
-
-    def __init__(
-        self,
-        tile: BaseTile,
-        msg: str = "Invalid tile",
-        *args: object
-    ) -> None:
-        self.tile = tile
-        self.msg = msg
-        self.full_msg = f"{msg}\nInfo: {self.tile}"
-        super().__init__(self.full_msg, *args)
 
 
 class ConfigErr(Exception):
