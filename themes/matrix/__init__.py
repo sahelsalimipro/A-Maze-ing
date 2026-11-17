@@ -8,7 +8,7 @@ from ._drawers import (
     FAR, NEAR, QuoteDirector, RainDrawer, SequenceDrawer
 )
 from .quotes import QUOTES
-from amazeing import Maze
+from maze import Maze
 from config import Settings
 if TYPE_CHECKING:
     from drawers import Drawer

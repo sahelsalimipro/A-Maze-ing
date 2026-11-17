@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any
 
 from drawers import EmptyDrawer, MenuDrawer
 from ._drawers import BaseDrawer, BannerDrawer, DefaultMazeDrawer
-from amazeing import Maze
+from maze import Maze
 from menu import COMMANDS
 from config import Settings
 if TYPE_CHECKING:

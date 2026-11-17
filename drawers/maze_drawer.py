@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Callable
 from .utils import _scale
 from .base import Drawer
 from globals import JUNCTIONS_CHARS
-from amazeing import Maze
+from maze import Maze
 
 if TYPE_CHECKING:
     from pixels import Pixel, PixelKind

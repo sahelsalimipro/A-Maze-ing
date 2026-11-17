@@ -7,7 +7,7 @@ import inspect
 
 from errors import ConfigErr
 if TYPE_CHECKING:
-    from amazeing import Maze
+    from maze import Maze
     from drawers import Drawer
     from config import Settings
 

@@ -2,12 +2,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from dirs import DELTAS, Direction
-from solvers import bfs
+from maze import DELTAS, Direction, bfs
 
 if TYPE_CHECKING:
-    from amazeing import Maze
-    from tiles import BaseTile
+    from maze import Maze, BaseTile
 
 # One bit per wall: N=1, E=2, S=4, W=8 (subject, section 4.5)
 WALL_BITS: dict[Direction, int] = {"N": 1, "E": 2, "S": 4, "W": 8}

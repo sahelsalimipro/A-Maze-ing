@@ -5,7 +5,7 @@ from typing import Literal, Generator, TYPE_CHECKING
 from .errors import InvalidTileErr
 from .dirs import DIRS, Direction
 if TYPE_CHECKING:
-    from amazeing import Maze
+    from maze import Maze
 
 # ---------- Generating IDs ---------- #
 def id_gen() -> Generator[str]:

@@ -7,7 +7,7 @@ from errors import ConfigErr, assert_rendering_dimensions, validate
 from regions import Region
 from config import load_config, Settings
 from dimensions import resolve_dimensions
-from amazeing import Maze, GenInfos
+from maze import Maze
 from themes_loader import load_theme_module, load_theme
 from render import clear_console, render, run
 from output_file import write_output
@@ -40,8 +40,16 @@ if __name__ == "__main__":
     }
 
     # Creating the maze
-    gen_infos = GenInfos(config["SEED"], config.get("PERFECT", False))
-    maze = Maze((config["MAZE_WIDTH"], config["MAZE_HEIGHT"]), gen_infos)
+    maze = Maze(
+        config["MAZE_WIDTH"],
+        config["MAZE_HEIGHT"],
+        config["SEED"],
+        config["PERFECT"],
+        config["ENTRY"],
+        config["EXIT"],
+        config["CARVER_ALGO"],
+        config["SOLVER_ALGO"]
+    )
     try:
         write_output(maze, config["OUTPUT_FILE"])
     except (OSError, ValueError) as e:
