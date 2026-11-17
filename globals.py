@@ -1,18 +1,21 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from os import get_terminal_size, terminal_size
+from os import terminal_size
+from shutil import get_terminal_size
 
 if TYPE_CHECKING:
     from types import ModuleType
     from config import Settings
     from regions import Region
+    from maze import Maze
 
 # ----------     config    ---------- #
 CONFIG: Settings
 
 # ----------   App state   ---------- #
 THEME_MODULE: ModuleType            # theme currently loaded
-REGIONS: dict[str, Region]          # set by main before run()
+REGIONS: dict[str, Region] = {}
+MAZE: Maze
 
 # ----------   Rendering   ---------- #
 FPS: int = 12
@@ -24,10 +27,6 @@ VIEW_X: int = 0
 
 # ----------    Terminal   ---------- #
 TERMINAL_SIZE: terminal_size = get_terminal_size()
-
-# ----------     Themes    ---------- #
-# VALID_THEMES: set[str] = {"matrix", "nyan-cat", "pac-man", "peach-castle"}
-# probably obsolete, since themes_loader.py checks dynamically ?
 
 # ----------   Junctions   ---------- #
 JUNCTIONS_CHARS = {

@@ -75,7 +75,10 @@ def run(regions: dict[str, Region]) -> None:
                 new_render = True
 
             if new_render:
-                render(regions)
+                # A command may have rebuilt the regions (theme change):
+                # refresh the list and clear what the old layout left
+                reg_list = tuple(regions.values())
+                render(regions, clear=True)
                 new_render = False
                 continue
 

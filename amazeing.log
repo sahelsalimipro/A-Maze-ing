@@ -61,3 +61,10 @@
 2026-11-06 19:15:37,373 [WARNING] config: BANNER_CORNER_BOTRIGHT_CHAR='"┘" # str - len 1' is invalid (expected exactly 1 character, got '"┘" # str - len 1'), using default '┘'
 2026-11-06 19:15:37,373 [WARNING] config: THEME_ON='FALSE # bool' is invalid (expected TRUE or FALSE, got 'FALSE # bool'), using default False
 2026-11-09 19:09:28,228 [WARNING] config: MAZE_WIDTH='-5' is invalid (Negative value), using default 20
+2026-11-17 18:57:20,349 [WARNING] maze_builder: Theme 'pac-man' skipped: no register()
+2026-11-17 18:57:40,572 [WARNING] maze_builder: Theme 'pac-man' skipped: no register()
+2026-11-17 18:57:55,126 [WARNING] maze_builder: Theme 'pac-man' skipped: no register()
+2026-11-17 19:13:31,151 [WARNING] themes_loader: Theme 'pac-man' skipped: Theme 'pac-man' has no register() function
+2026-11-17 19:18:21,980 [WARNING] themes_loader: Theme 'pac_man' skipped: Theme 'pac_man' has no register() function
+2026-11-17 19:21:07,242 [WARNING] maze_builder: Theme 'pac_man' skipped: no register()
+2026-11-17 19:21:29,434 [WARNING] themes_loader: Theme 'pac_man' skipped: Theme 'pac_man' has no register() function

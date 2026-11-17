@@ -31,8 +31,9 @@ COMMANDS: tuple[Command, ...] = (
     Command("Regenerate", "Remake the maze (with same seed)", "r", regenerate),
     Command("New seed", "Remake the maze (with a new seed)", "n", new_seed),
     Command("Theme on/off", "Enables or disable the use of theme",
-            "t", toggle_theme),
-    Command("Change theme", "Change theme", "y", change_theme),
+            "t", toggle_theme, BoolIndicator("THEME_ON")),
+    Command("Change theme", "Change theme", "y", change_theme,
+            StrIndicator("THEME_NAME")),
     Command("Exit", "Exit the program", "e", exit_prog)
 )
 

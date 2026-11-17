@@ -4,11 +4,9 @@ from types import ModuleType
 import globals
 from logger import setup_logging
 from errors import ConfigErr, assert_rendering_dimensions, validate
-from regions import Region
 from config import load_config, Settings
-from dimensions import resolve_dimensions
-from maze_builder import build_maze, attach_drawers
-from themes_loader import load_theme_module
+from app import build_maze, attach_drawers, build_regions
+from themes_loader import activate_theme
 from render import run
 
 if __name__ == "__main__":
@@ -18,10 +16,7 @@ if __name__ == "__main__":
     setup_logging()
     try:
         config = load_config()
-        theme_name = config["THEME_NAME"] if config["THEME_ON"] else "default"
-        module = load_theme_module(theme_name)
-        overrides = getattr(module, "OVERRIDES", {})
-        config.apply_theme(overrides)
+        module = activate_theme(config)
         validate(config)
         globals.CONFIG = config
 
@@ -31,13 +26,9 @@ if __name__ == "__main__":
 
 
     # Ruling to ensure dimensions of each region. 1 region = 1 drawer
-    rects = resolve_dimensions(config)
-    regions: dict[str, Region] = {
-        name: Region(name, rects[name]) for name in globals.REGIONS_NAMES
-    }
-
     globals.THEME_MODULE = module
-    globals.REGIONS = regions
+    build_regions()
+    regions = globals.REGIONS
 
     # Creating the maze (solved + written to the output file)
     try:

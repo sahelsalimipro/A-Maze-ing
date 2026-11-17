@@ -84,4 +84,5 @@ def validate(config: Settings) -> None:
             f"Invalid solver provided: {solver!r}. Valid solvers are: 'bfs', 'astar'."
         )
 
-    # TODO validate theme name.
+    # Theme name: validated by themes_loader.activate_theme(), which runs
+    # before this and raises ConfigErr for an unknown or broken theme.

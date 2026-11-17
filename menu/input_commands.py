@@ -37,9 +37,10 @@ def toggle_solve() -> bool:
     return True
 
 
+# app is imported inside the functions:
+# app -> themes -> menu would be a circular import at the top
 def _remake_maze() -> None:
-    # Imported here: maze_builder -> themes -> menu would be a circular import
-    from maze_builder import build_maze, attach_drawers
+    from app import build_maze, attach_drawers
     attach_drawers(build_maze(globals.CONFIG))
 
 
@@ -57,11 +58,26 @@ def new_seed() -> bool:
 
 
 def toggle_theme() -> bool:
-    pass
+    """Switches between THEME_NAME and the default theme."""
+    from app import switch_theme
+    globals.CONFIG.set("THEME_ON", not globals.CONFIG["THEME_ON"])
+    switch_theme()
+    return True
 
 
 def change_theme() -> bool:
-    pass
+    """Switches to the next available theme (alphabetical, loops) and
+    turns themes on."""
+    from app import switch_theme
+    from themes_loader import available_themes, active_theme_name
+    themes = available_themes()
+    cfg = globals.CONFIG
+    current = active_theme_name(cfg)
+    idx = themes.index(current) if current in themes else -1
+    cfg.set("THEME_NAME", themes[(idx + 1) % len(themes)])
+    cfg.set("THEME_ON", True)
+    switch_theme()
+    return True
 
 
 def exit_prog() -> bool:

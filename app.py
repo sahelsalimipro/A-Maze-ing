@@ -4,7 +4,9 @@ from typing import TYPE_CHECKING
 import globals
 from maze import Maze
 from output_file import write_output
-from themes_loader import load_theme
+from regions import Region
+from dimensions import resolve_dimensions
+from themes_loader import activate_theme, load_theme
 
 if TYPE_CHECKING:
     from config import Settings
@@ -35,3 +37,22 @@ def attach_drawers(maze: Maze) -> None:
     drawers = load_theme(globals.THEME_MODULE, globals.CONFIG, maze)
     for name, region in globals.REGIONS.items():
         region.attach(drawers[name])
+    globals.MAZE = maze
+
+
+def build_regions() -> None:
+    """(Re)computes the layout from the config and refills globals.REGIONS
+    *in place*: run() holds a reference to that same dict."""
+    rects = resolve_dimensions(globals.CONFIG)
+    globals.REGIONS.clear()
+    globals.REGIONS.update(
+        {name: Region(name, rects[name]) for name in globals.REGIONS_NAMES}
+    )
+
+
+def switch_theme() -> None:
+    """Activates the theme the config asks for, then rebuilds the layout
+    and the drawers. The maze itself is kept."""
+    globals.THEME_MODULE = activate_theme(globals.CONFIG)
+    build_regions()
+    attach_drawers(globals.MAZE)
