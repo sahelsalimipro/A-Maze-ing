@@ -1,17 +1,10 @@
 
 [Sahel/Basile]
-- Tester les animations
 - Readme + License
 - MazeGenerator and packaging
 
-- Menu / gerer les inputs. **Long**
-    [Sahel/Basile.Menu]
-    - regenerate a new maze.
-    - show/hide resolution
-    - change colors
 
 [Basile]
-- TODOs
 
 [Sahel]
 
@@ -22,6 +15,7 @@
 - Ouvrir entry/exit sur les bords
 
 [Done]
+- Tester les animations
 - ajouter seed/loop_chance parametres.
 - validation parametres
 - Logo 42
@@ -33,3 +27,9 @@
 - Finish rewrite
 - choice of solver/carver
 - output_file
+- TODOs
+- Menu / gerer les inputs. **Long**
+    [Sahel/Basile.Menu]
+    - regenerate a new maze.
+    - show/hide resolution
+    - change colors
