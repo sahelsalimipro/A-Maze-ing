@@ -8,14 +8,17 @@ from config import Settings
 
 class BaseDrawer(Drawer):
 
-    def __init__(self, bg_clr: tuple[int, int, int] | None) -> None:
-        self._bg_clr = bg_clr
+    def __init__(self, bg_clr_key: str) -> None:
+        """bg_clr_key: config key of the background color, e.g. "TOP_PADDING_CLR".
+        Looked up at draw() time so runtime recolors are picked up."""
+        self._bg_clr_key = bg_clr_key
         return
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        bg_clr = config[self._bg_clr_key]
         for row in buffer:
             for px in row:
-                px.bg_clr = self._bg_clr
+                px.bg_clr = bg_clr
         return
 
     def update(
@@ -30,8 +33,6 @@ class BannerDrawer(Drawer):
 
     def __init__(self, config: Settings) -> None:
         self._title = config["BANNER_TITLE"]
-        self._clr_fg = config["BANNER_TITLE_CLR"]
-        self._clr_bckg = config["BANNER_BCKG_CLR"]
         self._borders = {
             "top"    : config["BANNER_TOP_CHAR"],
             "bottom" : config["BANNER_BOT_CHAR"],
@@ -47,6 +48,8 @@ class BannerDrawer(Drawer):
         return
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        self._clr_fg = config["BANNER_TITLE_CLR"]
+        self._clr_bckg = config["BANNER_BCKG_CLR"]
         height = len(buffer)
         if height == 0:
             return

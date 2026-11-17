@@ -9,7 +9,7 @@ from config import load_config, Settings
 from dimensions import resolve_dimensions
 from maze import Maze
 from themes_loader import load_theme_module, load_theme
-from render import clear_console, run
+from render import run
 from output_file import write_output
 
 if __name__ == "__main__":
@@ -30,8 +30,6 @@ if __name__ == "__main__":
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
 
-
-    clear_console()
 
     # Ruling to ensure dimensions of each region. 1 region = 1 drawer
     rects = resolve_dimensions(config)
@@ -68,12 +66,10 @@ if __name__ == "__main__":
 
         for name, region in regions.items():
             region.attach(drawers[name])
-            region.fill_buffer(config)
 
         run(regions)
 
     except KeyboardInterrupt:
-        clear_console()
         print(f"\n\n{'Goodbye user!':^24}\n\n")
 
     except Exception as e:

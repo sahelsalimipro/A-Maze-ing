@@ -13,6 +13,8 @@ FPS: int = 12
 MAX_DT: float = 0.25
 T_FRAME: float = 1 / FPS
 STEP: float = 1 / 60  # 60 hertz for the simulation (pulling inputs)
+VIEW_Y: int = 0
+VIEW_X: int = 0
 
 # ----------    Terminal   ---------- #
 TERMINAL_SIZE: terminal_size = get_terminal_size()

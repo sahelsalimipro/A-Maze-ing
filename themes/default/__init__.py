@@ -13,28 +13,23 @@ if TYPE_CHECKING:
 
 def register(config: Settings, maze: Maze) -> dict[str, Drawer]:
 
-    padd_top_bg_clr = config["TOP_PADDING_CLR"]
-    padd_bot_bg_clr = config["BOT_PADDING_CLR"]
-    padd_left_bg_clr = config["LEFT_PADDING_CLR"]
-    padd_right_bg_clr = config["RIGHT_PADDING_CLR"]
-
     xtr, xtl = None, None
 
     if config["EXPAND_COLOR_TO_FULL_TERMINAL"]:
-        xtl = BaseDrawer(padd_left_bg_clr)
-        xtr = BaseDrawer(padd_right_bg_clr)
+        xtl = BaseDrawer("LEFT_PADDING_CLR")
+        xtr = BaseDrawer("RIGHT_PADDING_CLR")
     else:
         xtl = EmptyDrawer()
         xtr = EmptyDrawer()
 
     return {
         "extra-left": xtl,
-        "padd-left": BaseDrawer(padd_left_bg_clr),
-        "padd-right": BaseDrawer(padd_right_bg_clr),
+        "padd-left": BaseDrawer("LEFT_PADDING_CLR"),
+        "padd-right": BaseDrawer("RIGHT_PADDING_CLR"),
         "extra-right": xtr,
-        "padd-top": BaseDrawer(padd_top_bg_clr),
+        "padd-top": BaseDrawer("TOP_PADDING_CLR"),
         "banner": BannerDrawer(config),
         "maze": DefaultMazeDrawer(maze, config),
-        "padd-bottom": BaseDrawer(padd_bot_bg_clr),
+        "padd-bottom": BaseDrawer("BOT_PADDING_CLR"),
         "menu": MenuDrawer(COMMANDS)
     }

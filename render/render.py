@@ -11,22 +11,16 @@ from menu import handle_inputs, start_keyboard, stop_keyboard
 
 logger = logging.getLogger(__name__)
 
-_scrolled: int = 0          # layout rows pushed into the scrollback by the first print
-
-def update_dirty_pixels(regions: tuple[Region, ...]) -> None:
+def update_dirty_pixels(regions: tuple[Region, ...], clear: bool = False) -> None:
     parts: list[str] = []
     # (row, col), 0-based, where the terminal cursor is now
     cursor: tuple[int, int] | None = None
-    max_col = globals.TERMINAL_SIZE.columns
 
     for region in regions:
         ox, oy = region.origin
         for x, y in region.consume_dirty():  # sorted by row, then column
-            # OLD:
-            target = (oy + y, ox + x)
-            # NEW:
-            # target = (oy + y - _scrolled, ox + x)
-            if target[0] < 0 or target[1] >= max_col: # in scrollback (can't redraw)
+            target = _to_screen(ox + x, oy + y)
+            if target is None:
                 continue
 
             if cursor != target:             # skip the move if we're already there
@@ -36,53 +30,24 @@ def update_dirty_pixels(regions: tuple[Region, ...]) -> None:
             # writing one char advances the cursor by one
             cursor = (target[0], target[1] + 1)
 
-    if not parts:                            # nothing changed: no write, no flush
+    if clear:
+        parts.insert(0, "\033[2J")
+    if not parts:
         return
-
     sys.stdout.write("\033[?2026h" + "".join(parts) + "\033[0m\033[?2026l")
     sys.stdout.flush()
 
 
-def render(regions: dict[str, Region]) -> None:
 
-    lines = []
-    total_y: int = 0
-    for reg_name in globals.MID_REGION_ORDER:  # excludes the side padding and the menu
-        region = regions.get(reg_name)
-        if region is None:
-            continue
-        for y in range(region.height):
-            line = (
-                "".join(px_to_str(px)
-                        for px in regions["extra-left"].buf[total_y])
-                + "".join(px_to_str(px)
-                          for px in regions["padd-left"].buf[total_y])
-                + "".join(px_to_str(px) for px in region.buf[y])
-                + "".join(px_to_str(px)
-                          for px in regions["padd-right"].buf[total_y])
-                + "".join(px_to_str(px)
-                          for px in regions["extra-right"].buf[total_y])
-            )
-            lines.append(line)
-            total_y += 1
+def render(regions: dict[str, Region], clear: bool = False) -> None:
+    for region in regions.values():
+        region.redraw(globals.CONFIG)
+    update_dirty_pixels(tuple(regions.values()), clear)
 
-    for row in regions["menu"].buf:
-        lines.append("".join(px_to_str(px) for px in row))
-    # OLD:
-    # print("\n".join(lines))
-    # NEW:
-    # global _scrolled
-    # _scrolled = max(0, len(lines) - globals.TERMINAL_SIZE.lines)
-    sys.stdout.write("\n".join(lines))      # no trailing newline, it would scroll one extra row
-    sys.stdout.flush()
 
 
 def run(regions: dict[str, Region]) -> None:
 
-    sys.stdout.write("\033[?1049h") # Enter alternate screen
-    # sys.stdout.write("\033[?25l")   # Remove cursor
-    sys.stdout.flush()
-    start_keyboard()
 
     STEP: float = globals.STEP
     acc: float = 0.0
@@ -94,6 +59,11 @@ def run(regions: dict[str, Region]) -> None:
 
     try:
 
+        # Enter alternate screen - move cursor to top - remove cursor
+        sys.stdout.write("\033[?1049h\033[?25l\033[H\033[2J")
+        sys.stdout.flush()
+        start_keyboard()
+
         # MAIN LOOP
         while True:
             # Updating times of the loop
@@ -101,7 +71,8 @@ def run(regions: dict[str, Region]) -> None:
             acc += min(now - last, globals.MAX_DT)
             last = now
 
-            handle_inputs()
+            if handle_inputs():
+                new_render = True
 
             if new_render:
                 render(regions)
@@ -124,6 +95,13 @@ def run(regions: dict[str, Region]) -> None:
     finally:
 
         stop_keyboard()
-        # sys.stdout.write("\033[0m\033[?25h")    # Restore cursor
-        sys.stdout.write("\033[?1049l")         # Exit alternate screen
+        # End sync output - Restore cursor - Exit alt screen
+        sys.stdout.write("\033[?2026l\033[0m\033[?25h\033[?1049l")
         sys.stdout.flush()
+
+def _to_screen(lx: int, ly: int) -> tuple[int, int] | None:
+    row, col = ly - globals.VIEW_Y, lx - globals.VIEW_X
+    size = globals.TERMINAL_SIZE
+    if 0 <= row < size.lines and 0 <= col < size.columns:
+        return row, col
+    return None

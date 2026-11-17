@@ -66,6 +66,14 @@ class MazeDrawer(Drawer):
     def __init__(self, maze: Maze, config: Settings) -> None:
         self.maze = maze
         self.ratio: tuple[int, int] = config["TILE_RATIO"]
+        self._load_colors(config)
+
+        self._start_char = config["ENTRYPOINT_CHAR"]
+        self._goal_char = config["EXITPOINT_CHAR"]
+        return
+
+    def _load_colors(self, config: Settings) -> None:
+        """Read at every draw(), so a runtime recolor shows on redraw."""
         self.bg_clr: tuple[int, int, int] = config["BACKGROUND_CLR"]
         self.wall_clr: tuple[int, int, int] = config["WALLS_CLR"]
         self.trail_clr: tuple[int, int, int] = config["TRAIL_CLR"]
@@ -79,11 +87,8 @@ class MazeDrawer(Drawer):
             "empty": self.bg_clr
         }
 
-        self._start_char = config["ENTRYPOINT_CHAR"]
-        self._goal_char = config["EXITPOINT_CHAR"]
-        return
-
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        self._load_colors(config)
         self.fill_buffer(buffer)
         self._colorize(buffer)
         self._paint_logo(buffer)

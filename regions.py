@@ -22,10 +22,7 @@ class Region():
         self.name = name
         self.origin = (rect.x, rect.y)
         self.width, self.height = rect.w, rect.h
-        self.buf = [
-            [Pixel() for _ in range(self.width)]
-            for _ in range(self.height)
-        ]
+        self.buf = [[]]
         self.drawer = None
         self.dirty = set()
 
@@ -55,3 +52,10 @@ class Region():
         out = sorted(self.dirty, key=lambda p: (p[1], p[0]))
         self.dirty.clear()
         return out
+
+    def redraw(self, config: Settings) -> None:
+        """Rebuild the buffer from scratch and mark every pixel for output."""
+        self.buf = [[Pixel() for _ in range(self.width)] for _ in range(self.height)]
+        self.dirty.clear()
+        self.fill_buffer(config)
+        self.dirty = {(x, y) for y in range(self.height) for x in range(self.width)}
