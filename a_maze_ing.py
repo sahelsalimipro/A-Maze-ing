@@ -61,8 +61,8 @@ if __name__ == "__main__":
         if __debug__:
             assert_rendering_dimensions(regions)
 
-        if config.get("SOLVED", False):
-            maze.resolve()
+        # Always solved; the maze drawer shows the path only if SOLVED is on
+        maze.resolve()
 
         for name, region in regions.items():
             region.attach(drawers[name])

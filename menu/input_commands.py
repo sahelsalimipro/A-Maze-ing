@@ -29,7 +29,10 @@ def recolor() -> bool:
 
 
 def toggle_solve() -> bool:
-    pass
+    """Shows/hides the solution path. The path itself is computed once at
+    startup; the maze drawer only paints it when SOLVED is on."""
+    globals.CONFIG.set("SOLVED", not globals.CONFIG["SOLVED"])
+    return True
 
 
 def regenerate() -> bool:

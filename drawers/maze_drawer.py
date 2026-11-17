@@ -89,6 +89,7 @@ class MazeDrawer(Drawer):
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         self._load_colors(config)
+        self._show_solution: bool = config["SOLVED"]
         self.fill_buffer(buffer)
         self._colorize(buffer)
         self._paint_logo(buffer)
@@ -127,7 +128,8 @@ class MazeDrawer(Drawer):
                     for dx in range(ratio_x):
                         px = buffer[cy + dy][cx + dx]
                         px.kind = "content"
-                        if tile.isSolution and (dy, dx) in placements:
+                        if (self._show_solution and tile.isSolution
+                                and (dy, dx) in placements):
                             px.char = placements[dy, dx]
                             px.fg_clr = self.trail_clr
 
