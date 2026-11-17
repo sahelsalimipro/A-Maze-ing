@@ -7,7 +7,7 @@ import time
 from pixels import px_to_str
 from regions import Region
 import globals
-from menu import handle_inputs
+from menu import handle_inputs, start_keyboard, stop_keyboard
 
 logger = logging.getLogger(__name__)
 
@@ -81,6 +81,7 @@ def run(regions: list[Region]) -> None:
 
     sys.stdout.write("\033[?25l")  # Remove the user's cursor
     sys.stdout.flush()
+    start_keyboard()
 
     STEP: float = globals.STEP
     acc: float = 0.0
@@ -113,5 +114,6 @@ def run(regions: list[Region]) -> None:
 
     finally:
 
+        stop_keyboard()
         sys.stdout.write("\033[0m\033[?25h")  # Restore the cursor
         sys.stdout.flush()
