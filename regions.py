@@ -58,4 +58,8 @@ class Region():
         self.buf = [[Pixel() for _ in range(self.width)] for _ in range(self.height)]
         self.dirty.clear()
         self.fill_buffer(config)
+        self.mark_all()
+
+    def mark_all(self) -> None:
+        """Marks every pixel for output, e.g. after the view scrolled."""
         self.dirty = {(x, y) for y in range(self.height) for x in range(self.width)}

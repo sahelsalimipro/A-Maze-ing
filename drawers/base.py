@@ -56,7 +56,10 @@ class MenuDrawer(Drawer):
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         width = len(buffer[0])
         lay = self.layout = compute_menu_layout(self.commands, width)
-        self._put(buffer, 0, 0, " Actions ".center(width, "-"))
+        title = " Actions (scroll: ↑↓ j k PgUp PgDn) "
+        if len(title) > width:          # narrow terminal: drop the hint
+            title = " Actions "
+        self._put(buffer, 0, 0, title.center(width, "-"))
 
         for cmd, b in zip(self.commands, lay.blocks):
             self._put(buffer, b.y_press, MenuRenderingCtx.margin,
