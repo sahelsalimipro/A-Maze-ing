@@ -69,6 +69,8 @@ if __name__ == "__main__":
         for name, region in regions.items():
             region.attach(drawers[name])
             region.fill_buffer(config)
+
+        # scroll_y: int = 0 ?
         render(regions)
         run(list(regions.values()))
 

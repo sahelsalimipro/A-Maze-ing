@@ -1,7 +1,5 @@
 """Non-blocking keyboard polling, one key press at a time.
-
-No Enter needed and nothing echoed on the screen (an echoed key would be
-painted over the animation). Same API on every platform:
+Same API on every platform:
 
     start_keyboard()   once, before the main loop
     read_key()         a str of one character, or None if nothing was pressed
@@ -25,6 +23,7 @@ if sys.platform == "win32":
 
 else:
     import os
+    import select
     import termios
     import tty
 
@@ -36,19 +35,20 @@ else:
         if sys.stdin.isatty():
             _saved = termios.tcgetattr(fd)
             tty.setcbreak(fd)           # no line buffering, no echo; Ctrl-C works
-        os.set_blocking(fd, False)      # os.read() raises instead of waiting
+        # No O_NONBLOCK here: stdin and stdout are usually the same open file
+        # description, so it would make every stdout write able to fail with
+        # EAGAIN ("write could not complete without blocking") whenever the
+        # terminal is slow to drain. read_key() asks select() instead.
 
     def stop_keyboard() -> None:
         global _saved
-        fd = sys.stdin.fileno()
-        os.set_blocking(fd, True)
         if _saved is not None:
-            termios.tcsetattr(fd, termios.TCSADRAIN, _saved)
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, _saved)
             _saved = None
 
     def read_key() -> str | None:
-        try:
-            data = os.read(sys.stdin.fileno(), 1)
-        except BlockingIOError:
+        fd = sys.stdin.fileno()
+        if not select.select([fd], [], [], 0)[0]:     # nothing typed: don't wait
             return None
+        data = os.read(fd, 1)                         # ready, so this returns at once
         return data.decode(errors="ignore") or None
