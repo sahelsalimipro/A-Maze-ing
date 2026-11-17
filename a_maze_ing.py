@@ -9,7 +9,7 @@ from config import load_config, Settings
 from dimensions import resolve_dimensions
 from maze import Maze
 from themes_loader import load_theme_module, load_theme
-from render import clear_console, render, run
+from render import clear_console, run
 from output_file import write_output
 
 if __name__ == "__main__":
@@ -70,9 +70,7 @@ if __name__ == "__main__":
             region.attach(drawers[name])
             region.fill_buffer(config)
 
-        # scroll_y: int = 0 ?
-        render(regions)
-        run(list(regions.values()))
+        run(regions)
 
     except KeyboardInterrupt:
         clear_console()

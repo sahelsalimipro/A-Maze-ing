@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 _scrolled: int = 0          # layout rows pushed into the scrollback by the first print
 
-def update_dirty_pixels(regions: list[Region]) -> None:
+def update_dirty_pixels(regions: tuple[Region, ...]) -> None:
     parts: list[str] = []
     # (row, col), 0-based, where the terminal cursor is now
     cursor: tuple[int, int] | None = None
@@ -23,9 +23,9 @@ def update_dirty_pixels(regions: list[Region]) -> None:
         ox, oy = region.origin
         for x, y in region.consume_dirty():  # sorted by row, then column
             # OLD:
-            # target = (oy + y, ox + x)
+            target = (oy + y, ox + x)
             # NEW:
-            target = (oy + y - _scrolled, ox + x)
+            # target = (oy + y - _scrolled, ox + x)
             if target[0] < 0 or target[1] >= max_col: # in scrollback (can't redraw)
                 continue
 
@@ -71,15 +71,16 @@ def render(regions: dict[str, Region]) -> None:
     # OLD:
     # print("\n".join(lines))
     # NEW:
-    global _scrolled
-    _scrolled = max(0, len(lines) - globals.TERMINAL_SIZE.lines)
+    # global _scrolled
+    # _scrolled = max(0, len(lines) - globals.TERMINAL_SIZE.lines)
     sys.stdout.write("\n".join(lines))      # no trailing newline, it would scroll one extra row
     sys.stdout.flush()
 
 
-def run(regions: list[Region]) -> None:
+def run(regions: dict[str, Region]) -> None:
 
-    sys.stdout.write("\033[?25l")  # Remove the user's cursor
+    sys.stdout.write("\033[?1049h") # Enter alternate screen
+    # sys.stdout.write("\033[?25l")   # Remove cursor
     sys.stdout.flush()
     start_keyboard()
 
@@ -87,6 +88,9 @@ def run(regions: list[Region]) -> None:
     acc: float = 0.0
     last: float = time.perf_counter()
     last_render: float = last
+
+    new_render = True
+    reg_list = tuple(regions.values())
 
     try:
 
@@ -99,15 +103,20 @@ def run(regions: list[Region]) -> None:
 
             handle_inputs()
 
+            if new_render:
+                render(regions)
+                new_render = False
+                continue
+
             # Updating simulation
             while acc >= STEP:
-                for region in regions:
+                for region in reg_list:
                     region.update(STEP)
                 acc -= STEP
 
             # Updating the frame
             if now - last_render >= globals.T_FRAME:
-                update_dirty_pixels(regions)
+                update_dirty_pixels(reg_list)
                 last_render = now
             else:
                 time.sleep(0.001)  # yields the cpu for a millisec
@@ -115,5 +124,6 @@ def run(regions: list[Region]) -> None:
     finally:
 
         stop_keyboard()
-        sys.stdout.write("\033[0m\033[?25h")  # Restore the cursor
+        # sys.stdout.write("\033[0m\033[?25h")    # Restore cursor
+        sys.stdout.write("\033[?1049l")         # Exit alternate screen
         sys.stdout.flush()
