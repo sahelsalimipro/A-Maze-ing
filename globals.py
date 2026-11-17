@@ -3,10 +3,16 @@ from typing import TYPE_CHECKING
 from os import get_terminal_size, terminal_size
 
 if TYPE_CHECKING:
+    from types import ModuleType
     from config import Settings
+    from regions import Region
 
 # ----------     config    ---------- #
 CONFIG: Settings
+
+# ----------   App state   ---------- #
+THEME_MODULE: ModuleType            # theme currently loaded
+REGIONS: dict[str, Region]          # set by main before run()
 
 # ----------   Rendering   ---------- #
 FPS: int = 12

@@ -1,3 +1,5 @@
+from random import randrange
+
 import globals
 
 RGB = tuple[int, int, int]
@@ -35,12 +37,23 @@ def toggle_solve() -> bool:
     return True
 
 
+def _remake_maze() -> None:
+    # Imported here: maze_builder -> themes -> menu would be a circular import
+    from maze_builder import build_maze, attach_drawers
+    attach_drawers(build_maze(globals.CONFIG))
+
+
 def regenerate() -> bool:
-    pass
+    """Rebuilds the maze from the current SEED."""
+    _remake_maze()
+    return True
 
 
 def new_seed() -> bool:
-    pass
+    """Picks a random SEED, then rebuilds the maze from it."""
+    globals.CONFIG.set("SEED", randrange(2**31))
+    _remake_maze()
+    return True
 
 
 def toggle_theme() -> bool:

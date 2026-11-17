@@ -7,10 +7,9 @@ from errors import ConfigErr, assert_rendering_dimensions, validate
 from regions import Region
 from config import load_config, Settings
 from dimensions import resolve_dimensions
-from maze import Maze
-from themes_loader import load_theme_module, load_theme
+from maze_builder import build_maze, attach_drawers
+from themes_loader import load_theme_module
 from render import run
-from output_file import write_output
 
 if __name__ == "__main__":
     config: Settings
@@ -37,35 +36,22 @@ if __name__ == "__main__":
         name: Region(name, rects[name]) for name in globals.REGIONS_NAMES
     }
 
-    # Creating the maze
-    maze = Maze(
-        config["MAZE_WIDTH"],
-        config["MAZE_HEIGHT"],
-        config["SEED"],
-        config["PERFECT"],
-        config["ENTRY"],
-        config["EXIT"],
-        config["CARVER_ALGO"],
-        config["SOLVER_ALGO"]
-    )
+    globals.THEME_MODULE = module
+    globals.REGIONS = regions
+
+    # Creating the maze (solved + written to the output file)
     try:
-        write_output(maze, config["OUTPUT_FILE"])
+        maze = build_maze(config)
     except (OSError, ValueError) as e:
         print(f"Error writing output file: {e}")
         sys.exit(1)
-
-    # Prepares the drawers, responsible for rendering
-    drawers = load_theme(module, config, maze)
 
     try:
         if __debug__:
             assert_rendering_dimensions(regions)
 
-        # Always solved; the maze drawer shows the path only if SOLVED is on
-        maze.resolve()
-
-        for name, region in regions.items():
-            region.attach(drawers[name])
+        # Prepares the drawers, responsible for rendering
+        attach_drawers(maze)
 
         run(regions)
 
