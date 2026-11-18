@@ -18,4 +18,5 @@ QUOTES: tuple[str, ...] = (
     "Ignorance is bliss.",
     "Dodge this.",
     "Mr. Anderson...",
+    "Tunnel Man 42"
 )
