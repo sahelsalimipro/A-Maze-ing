@@ -5,7 +5,7 @@ One-off conversion tool: PNG (native size, no scaling -- typically exported
 from Pixilart, but could come from anywhere) -> a compact binary pixel-art
 format.
 
-Transparency: a source pixel is opaque iff alpha == 255. Anything else
+Transparency: a source pixel is opaque if alpha == 255. Anything else
 (including partial alpha) is fully transparent -- no threshold, no blending,
 matching how ANSI itself has no concept of partial alpha.
 

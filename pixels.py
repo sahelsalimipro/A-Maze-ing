@@ -5,11 +5,19 @@ PixelKind = Literal["content", "wall", "junction", "empty", "logo"]
 
 
 class Pixel:
-    def __init__(self) -> None:
-        self.char: str = " "
-        self.fg_clr: tuple[int, int, int] | None = None
-        self.bg_clr: tuple[int, int, int] | None = None
-        self.kind: PixelKind = "empty"
+    def __init__(
+            self,
+            char: str=" ",
+            fg_clr: tuple[int, int, int] | None = None,
+            bg_clr: tuple[int, int, int] | None = None,
+            kind: PixelKind = "empty"
+        ) -> None:
+
+        self.char: str = char
+        self.fg_clr: tuple[int, int, int] | None = fg_clr
+        self.bg_clr: tuple[int, int, int] | None = bg_clr
+        self.kind: PixelKind = kind
+        return
 
 
 def px_to_str(pixel: Pixel) -> str:

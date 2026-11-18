@@ -51,11 +51,11 @@ from dataclasses import dataclass
 
 from pixels import Pixel
 
-MAGIC = b"AMZP"
-VERSION = 1
+MAGIC: bytes = b"AMZP"
+VERSION: float = 1
 
-_HEADER_FORMAT = "<4sBHHB"  # magic, version, width, height, palette_count
-_HEADER_SIZE = struct.calcsize(_HEADER_FORMAT)
+_HEADER_FORMAT: str = "<4sBHHB"  # magic, version, width, height, palette_count
+_HEADER_SIZE: int = struct.calcsize(_HEADER_FORMAT)
 
 
 @dataclass
