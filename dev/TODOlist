@@ -1,9 +1,4 @@
 
-[Sahel/Basile]
-- License
-- packaging
-
-
 [Optionel]
 - creer des themes
 - Resolution par animation
@@ -28,3 +23,5 @@
     - regenerate a new maze.
     - show/hide resolution
     - change colors
+- License
+- packaging
