@@ -24,6 +24,7 @@ SCROLL_KEYS: dict[str, tuple[int, bool]] = {
 
 
 def is_command(value: str) -> TypeGuard[INPUT_COMMAND]:
+    """True if value is the key of a command."""
     return value in COMMAND_TABLE
 
 

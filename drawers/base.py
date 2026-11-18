@@ -9,9 +9,15 @@ from config import Settings
 
 
 class Drawer(ABC):
+    """Fills the pixel buffer of one region.
+
+    draw() paints the whole buffer; update() animates it and reports
+    every changed pixel.
+    """
 
     @abstractmethod
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Paint the whole buffer. Called on startup and on every redraw."""
         ...
 
     @abstractmethod
@@ -29,6 +35,7 @@ class EmptyDrawer(Drawer):
     """Draws empty space in default terminal color"""
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Leave the buffer empty."""
         return
 
     def update(
@@ -37,6 +44,7 @@ class EmptyDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return
 
 
@@ -46,16 +54,21 @@ class MenuDrawer(Drawer):
     commands: tuple[Command, ...]
 
     def __init__(self, commands: tuple[Command, ...]) -> None:
+        """Store the commands to list. The layout is computed in draw()."""
         self.commands = commands
         self.layout: MenuLayout | None = None
         return
 
     @staticmethod
     def _put(buffer: list[list[Pixel]], y: int, x: int, text: str) -> None:
+        """Write text into the buffer, starting at row y, column x."""
         for i, ch in enumerate(text):
             buffer[y][x + i].char = ch
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Draw the title bar, then each command's key, name, indicator
+        and description, wrapped to the buffer's width.
+        """
         width = len(buffer[0])
         lay = self.layout = compute_menu_layout(self.commands, width)
         title = " Actions (scroll: ↑↓ j k PgUp PgDn) "
@@ -89,4 +102,5 @@ class MenuDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return

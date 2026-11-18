@@ -60,6 +60,9 @@ _HEADER_SIZE: int = struct.calcsize(_HEADER_FORMAT)
 
 @dataclass
 class ArtData:
+    """Decoded .pxart image: size, palette and one palette index per
+    pixel. An index equal to len(colors) means transparent.
+    """
     width: int
     height: int
     colors: list[tuple[int, int, int]]

@@ -45,6 +45,13 @@ def _content_placements(
     ratio_x: int, ratio_y: int
 ) -> dict[tuple[int, int], str]:
 
+    """Where to draw the path glyph inside a cell of the given size.
+
+    Returns:
+        A glyph for each (dy, dx) offset at the centre of the cell:
+        one, two or four positions depending on the parity of the
+        ratio.
+    """
     if ratio_y % 2:
         rows = [((ratio_y - 1) // 2, "mid")]
     else:
@@ -63,7 +70,9 @@ def _content_placements(
 
 
 class MazeDrawer(Drawer):
+    """Draws the maze: walls, the 42, the path, the entry and exit."""
     def __init__(self, maze: Maze, config: Settings) -> None:
+        """Store the maze and read the display settings."""
         self.maze = maze
         self.ratio: tuple[int, int] = config["TILE_RATIO"]
         self._load_colors(config)
@@ -88,6 +97,7 @@ class MazeDrawer(Drawer):
         }
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Draw the maze with the current colors and SOLVED setting."""
         self._load_colors(config)
         self._show_solution: bool = config["SOLVED"]
         self.fill_buffer(buffer)
@@ -101,9 +111,13 @@ class MazeDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return
 
     def fill_buffer(self, buffer: list[list[Pixel]]) -> None:
+        """Draw every cell: its content, path glyph and walls, then the
+        wall junctions and the entry and exit markers.
+        """
         ratio_x, ratio_y = self.ratio
         inner = [row[1:-1] for row in self.maze.grid[1:-1]]
         ct_rows, ct_cols = len(inner), len(inner[0])
@@ -165,10 +179,14 @@ class MazeDrawer(Drawer):
     def _fill_junctions(
         self, buffer: list[list[Pixel]], ct_rows: int, ct_cols: int
     ) -> None:
+        """Replace the character at each wall corner with the box-drawing
+        character that joins the walls around it.
+        """
         ratio_x, ratio_y = self.ratio
         buf_h, buf_w = len(buffer), len(buffer[0])
 
         def is_wall(y: int, x: int) -> bool:
+            """True if (y, x) is inside the buffer and is a wall."""
             return (0 <= y < buf_h and 0 <= x < buf_w
                     and buffer[y][x].kind == "wall")
 
@@ -189,6 +207,7 @@ class MazeDrawer(Drawer):
         return
 
     def _draw_markers(self, buffer: list[list[Pixel]]) -> None:
+        """Draw the entry and exit characters at the centre of their cell."""
         ratio_x, ratio_y = self.ratio
         mid_x = (ratio_x - 1) // 2
         mid_y = (ratio_y - 1) // 2
@@ -206,6 +225,9 @@ class MazeDrawer(Drawer):
         return
 
     def _colorize(self, buffer: list[list[Pixel]]) -> None:
+        """Set every pixel's colors from its kind. The 42 is filled with
+        the wall color.
+        """
         for y, row in enumerate(buffer):
             for x, px in enumerate(row):
                 if (y, x) in self._logo_px:
@@ -216,10 +238,12 @@ class MazeDrawer(Drawer):
         return
 
     def _paint_logo(self, buffer: list[list[Pixel]]) -> None:
+        """Draw the 42 with quadrant block characters (currently unused)."""
         ratio_x, ratio_y = self.ratio
         inner = [row[1:-1] for row in self.maze.grid[1:-1]]
 
         def is_logo(r: int, c: int) -> bool:
+            """True if maze cell (r, c) exists and belongs to the 42."""
             return (0 <= r < len(inner) and 0 <= c < len(inner[0])
                     and inner[r][c].isLogo)
 

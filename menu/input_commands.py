@@ -40,6 +40,7 @@ def toggle_solve() -> bool:
 # app is imported inside the functions:
 # app -> themes -> menu would be a circular import at the top
 def _remake_maze() -> None:
+    """Build a maze from the current config and attach the drawers."""
     from app import build_maze, attach_drawers
     attach_drawers(build_maze(globals.CONFIG))
 
@@ -81,4 +82,9 @@ def change_theme() -> bool:
 
 
 def exit_prog() -> bool:
+    """Quit the program.
+
+    Raises:
+        KeyboardInterrupt: always, caught by the main program.
+    """
     raise KeyboardInterrupt()

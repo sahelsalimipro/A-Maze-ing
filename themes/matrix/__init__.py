@@ -61,6 +61,7 @@ BOT_SEQUENCE = "▁▂▃▄▅▆▇█▇▆▅▄▃▂▁ "
 
 
 def register(config: Settings, maze: Maze) -> dict[str, Drawer]:
+    """Return the drawer of every region for the matrix theme."""
     quotes = QuoteDirector(QUOTES)      # shared: no repeats across regions
 
     left_bg = config["LEFT_PADDING_CLR"]

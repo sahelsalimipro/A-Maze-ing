@@ -10,7 +10,11 @@ if TYPE_CHECKING:
 
 class ConfigErr(Exception):
 
+    """Invalid or missing configuration. Stops the program at startup."""
     def __init__(self, msg: str = "", config: object = None) -> None:
+        """Create the error. Without msg, guess the cause: missing .env,
+        no environment variables or empty config.
+        """
         if not msg:
             if not os.path.exists(".env"):
                 msg = "No .env file detected"
@@ -25,6 +29,12 @@ class ConfigErr(Exception):
 
 
 def assert_rendering_dimensions(regions: dict[str, Region]) -> None:
+    """Check that the middle regions line up (debug only).
+
+    Raises:
+        ValueError: if no middle region is defined.
+        AssertionError: if their widths or side heights differ.
+    """
     mid_regions = [
         regions[name] for name in globals.MID_REGION_ORDER if name in regions
     ]
@@ -53,17 +63,27 @@ def assert_rendering_dimensions(regions: dict[str, Region]) -> None:
 
 def validate(config: Settings) -> None:
 
+    """Check the settings that depend on each other.
+
+    Raises:
+        ConfigErr: if the maze has fewer than 2 cells, or the carver
+            or solver is unknown.
+    """
     def _is_below(val, below) -> bool:
+        """True if val < below."""
         return val < below
 
     def _is_above(val, above) -> bool:
+        """True if val > above."""
         return val > above
 
-    maze_w, maze_h = config.get("MAZE_WIDTH"), config.get("MAZE_HEIGHT")
+    maze_w, maze_h = config["WIDTH"], config["HEIGHT"]
 
-    if _is_below(maze_w, 9) or _is_below(maze_h, 7):
+    # Entry and exit must be two different cells
+    if _is_below(maze_w, 1) or _is_below(maze_h, 1) or maze_w * maze_h < 2:
         raise ConfigErr(
-            f"Maze dimensions specified {maze_w}x{maze_h} too small, min 9x7"
+            f"Maze dimensions specified {maze_w}x{maze_h} too small: "
+            "the maze needs at least 2 cells"
         )
 #     tile_ratio = config.get("TILE_RATIO", (0, 0))
 #     if _is_below(tile_ratio[0], 1) or _is_below(tile_ratio[1], 1):

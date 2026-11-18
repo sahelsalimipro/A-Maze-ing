@@ -5,7 +5,14 @@ from collections import deque
 
 
 def astar(start: BaseTile, goal: BaseTile) -> list[BaseTile] | None:
+    """Shortest path from start to goal with A*.
+
+    Returns:
+        The tiles from start to goal (both included), or None if
+        goal cannot be reached.
+    """
     def h(t: BaseTile) -> int:
+        """Manhattan distance from t to goal (the A* heuristic)."""
         return abs(t.x - goal.x) + abs(t.y - goal.y)
 
     open_: list[tuple[int, BaseTile]] = [(h(start), start)]

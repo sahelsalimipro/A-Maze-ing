@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 def register(config: Settings, maze: Maze) -> dict[str, Drawer]:
 
+    """Return the drawer of every region for the default theme."""
     xtl: Drawer
     xtr: Drawer
     if config["EXPAND_COLOR_TO_FULL_TERMINAL"]:

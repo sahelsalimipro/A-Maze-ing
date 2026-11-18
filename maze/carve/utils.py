@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 
 def carvable(t: BaseTile | None) -> TypeGuard[BaseTile]:
+    """True if t is a normal cell (not the border, not the 42)."""
     return t is not None and not t.isLimit and not t.isLogo
 
 

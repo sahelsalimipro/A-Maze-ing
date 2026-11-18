@@ -18,12 +18,15 @@ if sys.platform == "win32":
     }
 
     def start_keyboard() -> None:
+        """Nothing to set up on Windows."""
         return
 
     def stop_keyboard() -> None:
+        """Nothing to restore on Windows."""
         return
 
     def read_key() -> str | None:
+        """Return the key pressed, or None if no key is waiting."""
         if not msvcrt.kbhit():
             return None
         ch = msvcrt.getwch()
@@ -52,6 +55,9 @@ else:
     _SEQ_TIMEOUT = 0.01
 
     def start_keyboard() -> None:
+        """Put the terminal in cbreak mode: keys arrive one at a time,
+        without echo. Saves the previous mode for stop_keyboard().
+        """
         global _saved
         fd = sys.stdin.fileno()
         if sys.stdin.isatty():
@@ -64,6 +70,7 @@ else:
         # terminal is slow to drain. read_key() asks select() instead.
 
     def stop_keyboard() -> None:
+        """Restore the terminal mode saved by start_keyboard()."""
         global _saved
         if _saved is not None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, _saved)
@@ -93,6 +100,11 @@ else:
         return _SEQUENCES.get(seq)          # unknown sequence: ignored
 
     def read_key() -> str | None:
+        """Return the key pressed, or None if no key is waiting.
+
+        Arrow and page keys are returned as "UP", "DOWN", "PGUP",
+        "PGDN".
+        """
         fd = sys.stdin.fileno()
         data = _read_byte(fd, 0)            # nothing typed: don't wait
         if not data:

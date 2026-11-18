@@ -19,6 +19,7 @@ from .commands import Command
 @dataclass(frozen=True)
 class MenuRenderingCtx:
 
+    """Fixed layout values of the menu: labels, margins, spacing."""
     labels: tuple[str, ...] = ("Press:", "Name:", "Indicator:", "Description:")
     label_w: int = max(len(lbl) for lbl in labels)
     margin: int = 1
@@ -30,6 +31,7 @@ class MenuRenderingCtx:
 
 @dataclass(frozen=True)
 class MenuBlock:
+    """Rows used by one command in the menu, and its wrapped text."""
     y_press: int
     y_name: int
     name_lines: tuple[str, ...]
@@ -40,6 +42,7 @@ class MenuBlock:
 
 @dataclass(frozen=True)
 class MenuLayout:
+    """Layout of the whole menu for a given width."""
     text_x: int
     text_w: int
     indicator_w: tuple[int, ...]       # fixed width of each indicator
@@ -49,12 +52,21 @@ class MenuLayout:
 
 def _wrap(text: str, width: int) -> tuple[str, ...]:
     # break_long_words=True: a very long word is split instead of failing
+    """Wrap text to width; never returns an empty tuple."""
     return tuple(textwrap.wrap(text, width, break_long_words=True)) or ("",)
 
 
 def compute_menu_layout(
     commands: tuple[Command, ...], width: int
 ) -> MenuLayout:
+    """Place every command in the menu, wrapping text to width.
+
+    Returns:
+        The layout, including the menu's total height.
+
+    Raises:
+        ValueError: if width is too narrow for the menu.
+    """
     text_w = width - MenuRenderingCtx.text_x - MenuRenderingCtx.margin
     if text_w < MenuRenderingCtx.min_text_w:
         raise ValueError(f"Terminal too narrow for the menu ({width} columns)")

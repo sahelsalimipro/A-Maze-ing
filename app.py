@@ -16,8 +16,8 @@ def build_maze(config: Settings) -> Maze:
     """Carves a maze from the config, solves it and writes the output file.
     Raises OSError/ValueError if the output file can't be written."""
     maze = Maze(
-        config["MAZE_WIDTH"],
-        config["MAZE_HEIGHT"],
+        config["WIDTH"],
+        config["HEIGHT"],
         config["SEED"],
         config["PERFECT"],
         config["ENTRY"],

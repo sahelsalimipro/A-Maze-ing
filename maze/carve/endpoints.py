@@ -10,6 +10,7 @@ Coord = tuple[int, int]
 
 
 def _hint(label: str) -> str:
+    """Advice appended to endpoint error messages."""
     return (f"Pick other coordinates, or set {label} to NONE "
             "to let the program choose it.")
 
@@ -20,10 +21,12 @@ def _coord(t: BaseTile) -> Coord:
 
 
 def _on_border(maze: Maze, t: BaseTile) -> bool:
+    """True if t is a cell on the outer edge of the maze."""
     return t.x in (1, maze.width) or t.y in (1, maze.height)
 
 
 def _prefer_border(maze: Maze, tiles: list[BaseTile]) -> list[BaseTile]:
+    """Return the tiles on the border, or all tiles if none is."""
     return [t for t in tiles if _on_border(maze, t)] or tiles
 
 

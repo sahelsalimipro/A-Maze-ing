@@ -8,6 +8,7 @@ from config import Settings
 
 class BaseDrawer(Drawer):
 
+    """Fills a region with a background color from the config."""
     def __init__(self, bg_clr_key: str) -> None:
         """bg_clr_key: config key of the background color,
         e.g. "TOP_PADDING_CLR".
@@ -16,6 +17,7 @@ class BaseDrawer(Drawer):
         return
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Paint the whole buffer with the background color."""
         bg_clr = config[self._bg_clr_key]
         for row in buffer:
             for px in row:
@@ -28,12 +30,15 @@ class BaseDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return
 
 
 class BannerDrawer(Drawer):
 
+    """Draws the title inside a frame."""
     def __init__(self, config: Settings) -> None:
+        """Read the title and frame characters from the config."""
         self._title = config["BANNER_TITLE"]
         self._borders = {
             "top": config["BANNER_TOP_CHAR"],
@@ -50,6 +55,11 @@ class BannerDrawer(Drawer):
         return
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Draw the frame and the centred title.
+
+        Raises:
+            ValueError: if the buffer is smaller than 2x3.
+        """
         self._clr_fg = config["BANNER_TITLE_CLR"]
         self._clr_bckg = config["BANNER_BCKG_CLR"]
         height = len(buffer)
@@ -93,11 +103,13 @@ class BannerDrawer(Drawer):
                 self._set_pixel(px, ch)
 
     def _set_row(self, row: list[Pixel], chars: str) -> None:
+        """Write chars on row, one per pixel, with the banner colors."""
         for px, ch in zip(row, chars):
             self._set_pixel(px, ch)
         return
 
     def _set_pixel(self, px: Pixel, ch: str) -> None:
+        """Write ch on px with the banner colors."""
         px.char = ch
         px.fg_clr = self._clr_fg
         px.bg_clr = self._clr_bckg
@@ -110,11 +122,14 @@ class BannerDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return
 
 
 class DefaultMazeDrawer(MazeDrawer):
+    """The maze drawer of the default theme, without changes."""
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Draw the maze."""
         return super().draw(buffer, config)
 
     def update(
@@ -123,4 +138,5 @@ class DefaultMazeDrawer(MazeDrawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return super().update(buffer, dt, mark)

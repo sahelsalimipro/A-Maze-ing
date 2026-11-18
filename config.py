@@ -15,6 +15,11 @@ logger = logging.getLogger(__name__)
 
 # ---------- Per-type parsers ---------- #
 def parse_bool(raw: str) -> bool:
+    """Parse TRUE / FALSE (any case).
+
+    Raises:
+        ValueError: for any other value.
+    """
     v = raw.strip().upper()
     if v == "TRUE":
         return True
@@ -24,6 +29,11 @@ def parse_bool(raw: str) -> bool:
 
 
 def parse_int(raw: str) -> int:
+    """Parse a non-negative integer.
+
+    Raises:
+        ValueError: if not an integer, or negative.
+    """
     res = int(raw.strip())
     if res < 0:
         raise ValueError("Negative value")
@@ -31,10 +41,16 @@ def parse_int(raw: str) -> int:
 
 
 def parse_str(raw: str) -> str:
+    """Parse a string, removing surrounding spaces and double quotes."""
     return raw.strip().strip('"')
 
 
 def parse_char(raw: str) -> str:
+    """Parse a string of exactly one character.
+
+    Raises:
+        ValueError: if the length is not 1.
+    """
     s = parse_str(raw)
     if len(s) != 1:
         raise ValueError(f"expected exactly 1 character, got {raw!r}")
@@ -42,6 +58,11 @@ def parse_char(raw: str) -> str:
 
 
 def parse_coord(raw: str) -> tuple[int, int] | None:
+    """Parse 'x,y' into a tuple of non-negative ints, or NONE into None.
+
+    Raises:
+        ValueError: on a bad format or a negative value.
+    """
     raw = raw.strip()
     if raw.upper() == "NONE":
         return None
@@ -61,6 +82,11 @@ def parse_coord(raw: str) -> tuple[int, int] | None:
 
 
 def parse_ratio(raw: str) -> tuple[int, int]:
+    """Parse 'w,h' into a tuple of two positive ints.
+
+    Raises:
+        ValueError: on a bad format or a value <= 0.
+    """
     parts = raw.strip().split(",")
     if len(parts) != 2:
         raise ValueError(f"expected 'int,int', got {raw!r}")
@@ -74,6 +100,11 @@ COLOR_RE = re.compile(r"^\(?\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)?$")
 
 
 def parse_color(raw: str) -> tuple[int, int, int] | None:
+    """Parse 'r, g, b' (each 0-255) into a tuple, or NONE into None.
+
+    Raises:
+        ValueError: on a bad format or a channel out of range.
+    """
     s = parse_str(raw)
     if s.upper() == "NONE":
         return None
@@ -90,10 +121,16 @@ def parse_color(raw: str) -> tuple[int, int, int] | None:
 
 
 def _is_int(v: Any) -> bool:
+    """True if v is an int, but not a bool (bool is a subclass of int)."""
     return isinstance(v, int) and not isinstance(v, bool)   # True is an int!
 
 
 def check_int(v: Any) -> int:
+    """Return v if it is a non-negative int.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if not _is_int(v):
         raise ValueError(f"expected int, got {v!r}")
     if v < 0:
@@ -102,12 +139,22 @@ def check_int(v: Any) -> int:
 
 
 def check_bool(v: Any) -> bool:
+    """Return v if it is a bool.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if not isinstance(v, bool):
         raise ValueError(f"expected bool, got {v!r}")
     return v
 
 
 def check_color(v: Any) -> tuple[int, int, int] | None:
+    """Return v as an (r, g, b) tuple with channels in 0-255, or None.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if v is None:
         return None
     if not (isinstance(v, (tuple, list)) and len(v) == 3
@@ -117,18 +164,33 @@ def check_color(v: Any) -> tuple[int, int, int] | None:
 
 
 def check_str(v: Any) -> str:
+    """Return v if it is a non-empty str.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if not isinstance(v, str) or not v:
         raise ValueError(f"expected str with min_len = 1, got {v!r}")
     return v
 
 
 def check_char(v: Any) -> str:
+    """Return v if it is a str of exactly one character.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if not isinstance(v, str) or len(v) != 1:
         raise ValueError(f"expected exactly 1 character, got {v!r}")
     return v
 
 
 def check_coord(v: Any) -> tuple[int, int] | None:
+    """Return v as an (x, y) tuple of non-negative ints, or None.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if v is None:
         return None
     if not (isinstance(v, (tuple, list)) and len(v) == 2
@@ -138,6 +200,11 @@ def check_coord(v: Any) -> tuple[int, int] | None:
 
 
 def check_ratio(v: Any) -> tuple[int, int]:
+    """Return v as a tuple of two positive ints.
+
+    Raises:
+        ValueError: otherwise.
+    """
     if not (isinstance(v, (tuple, list)) and len(v) == 2
             and all(_is_int(c) and c > 0 for c in v)):
         raise ValueError(f"expected two positive ints, got {v!r}")
@@ -147,6 +214,13 @@ def check_ratio(v: Any) -> tuple[int, int]:
 # ---------- Schema ---------- #
 @dataclass
 class FieldType:
+    """How to read one kind of setting.
+
+    Attributes:
+        convert: turns the raw text from the file into a value.
+        check: validates a value (from the file, a theme or a
+            menu command) and returns it.
+    """
     convert: Callable[[str], Any]
     check: Callable[[Any], Any]
 
@@ -162,6 +236,13 @@ RATIO = FieldType(parse_ratio, check_ratio)
 
 @dataclass
 class FieldSpec:
+    """Description of one setting: its key, type and default value.
+
+    Attributes:
+        themeable: a theme may override it.
+        critical: a missing or invalid value stops the program,
+            instead of falling back to the default.
+    """
     key: str
     type: FieldType
     default: Any
@@ -171,15 +252,17 @@ class FieldSpec:
     critical: bool = False
 
     def parse(self, raw: str) -> Any:        # .env only
+        """Convert and check a raw value read from the config file."""
         return self.type.check(self.type.convert(raw))
 
     def check(self, value: Any) -> Any:      # theme + runtime
+        """Check a value set by a theme or at runtime."""
         return self.type.check(value)
 
 
 FIELDS: list[FieldSpec] = [
-    FieldSpec("MAZE_WIDTH", INT, 20, themeable=False),
-    FieldSpec("MAZE_HEIGHT", INT, 15, themeable=False),
+    FieldSpec("WIDTH", INT, 20, themeable=False),
+    FieldSpec("HEIGHT", INT, 15, themeable=False),
     FieldSpec("SOLVED", BOOL, False, themeable=False),
     FieldSpec("SEED", INT, 42, themeable=False, critical=True),
     FieldSpec("PERFECT", BOOL, True, themeable=False, critical=True),
@@ -237,27 +320,47 @@ class Settings(Mapping[str, Any]):
     def __init__(
         self, base: dict[str, Any], specs: Mapping[str, FieldSpec]
     ) -> None:
+        """Create the settings from the values read from the file.
+
+        Args:
+            base: the values read from the config file.
+            specs: the FieldSpec of every known key.
+        """
         self._specs = specs
         self._theme: dict[str, Any] = {}
         self._runtime: dict[str, Any] = {}
         self._chain = ChainMap(self._runtime, self._theme, dict(base))
 
     def __getitem__(self, key: str) -> Any:
+        """Return the current value of a setting."""
         return self._chain[key]
 
     def __iter__(self) -> Iterator[str]:
+        """Iterate over the keys of every setting."""
         return iter(self._chain)
 
     def __len__(self) -> int:
+        """Return the number of settings."""
         return len(self._chain)
 
     def _spec(self, key: str) -> FieldSpec:
+        """Return the FieldSpec of key.
+
+        Raises:
+            ValueError: if the key is unknown.
+        """
         try:
             return self._specs[key]
         except KeyError:
             raise ValueError(f"unknown setting {key!r}") from None
 
     def apply_theme(self, overrides: Mapping[str, Any]) -> None:
+        """Replace the theme overrides with overrides.
+
+        Invalid or non-themeable values are logged and ignored. Runtime
+        changes to themeable keys (recolors) are dropped, so the new
+        theme's colors show.
+        """
         self._theme.clear()
         for key, value in overrides.items():
             try:
@@ -272,10 +375,26 @@ class Settings(Mapping[str, Any]):
             del self._runtime[key]           # recolors from the old theme
 
     def set(self, key: str, value: Any) -> None:
+        """Change a setting at runtime (menu commands).
+
+        Raises:
+            ValueError: if the key is unknown or the value invalid.
+        """
         self._runtime[key] = self._spec(key).check(value)
 
 
 def load_config() -> Settings:
+    """Read the .env file and build the settings.
+
+    Invalid optional values are logged and replaced by their default.
+
+    Returns:
+        The settings.
+
+    Raises:
+        ConfigErr: if the file is missing, or a critical value is
+            missing or invalid.
+    """
     if not dotenv.load_dotenv():
         raise ConfigErr()
 

@@ -50,16 +50,19 @@ QUOTE_DIM: RGB = (0, 105, 32)
 
 
 def _mul(color: RGB, k: float) -> RGB:
+    """Multiply every channel of color by k."""
     return (int(color[0] * k), int(color[1] * k), int(color[2] * k))
 
 
 def _noop(x: int, y: int) -> None:
+    """A mark() callback that does nothing."""
     return
 
 
 # ---------- Rain ---------- #
 @dataclass(frozen=True)
 class RainStyle:
+    """Settings of a digital rain: speed, length, density, brightness."""
     speed: tuple[float, float]                  # rows per second
     length: tuple[int, int]                     # trail length, in rows
     # idle seconds between 2 streams
@@ -81,6 +84,7 @@ class QuoteDirector:
     so the same line doesn't fall twice in a row or in two places at once."""
 
     def __init__(self, quotes: tuple[str, ...]) -> None:
+        """Keep the non-empty quotes."""
         self._quotes = [q for q in quotes if q.strip()]
         self._bag: list[str] = []
         self._rng = Random()
@@ -111,6 +115,7 @@ def _band_edges(length: int) -> list[int]:
 
 
 class _Stream:
+    """One falling stream of glyphs (or of a quote) in a column."""
     __slots__ = ("pos", "row", "speed", "length", "bands", "head", "text")
 
     def __init__(
@@ -121,6 +126,7 @@ class _Stream:
         head: RGB,
         text: str | None = None,
     ) -> None:
+        """Create a stream above the top of the column."""
         self.pos = 0.0          # head position, in rows (float)
         self.row = -1           # last row the head was written on
         self.speed = speed
@@ -139,6 +145,11 @@ class RainDrawer(Drawer):
         bg: RGB | None,
         quotes: QuoteDirector | None = None,
     ) -> None:
+        """Create a rain with style, on background bg.
+
+        quotes is shared by the rain drawers, so a quote falls in only
+        one place at a time. None for no quotes.
+        """
         self._style = style
         self._bg = bg
         self._quotes = quotes
@@ -158,6 +169,7 @@ class RainDrawer(Drawer):
 
     # ---------- Drawer interface ---------- #
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Clear the buffer and start the rain from the beginning."""
         self._h = len(buffer)
         self._w = len(buffer[0]) if self._h else 0
         for row in buffer:
@@ -182,6 +194,7 @@ class RainDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Advance the rain, in fixed ticks."""
         if not (self._w and self._h):
             return
         self._acc += dt
@@ -192,6 +205,7 @@ class RainDrawer(Drawer):
 
     # ---------- Simulation ---------- #
     def _tick(self, buf: list[list[Pixel]], dt: float, mark: Mark) -> None:
+        """Move every stream down, start new ones, and maybe a quote."""
         rng, streams, wait = self._rng, self._streams, self._wait
         for x in range(self._w):
             s = streams[x]
@@ -248,12 +262,14 @@ class RainDrawer(Drawer):
         return rr >= h - 1
 
     def _spawn(self) -> _Stream:
+        """Create a stream of random glyphs."""
         st, rng = self._style, self._rng
         length = rng.randint(*st.length)
         bands = tuple(zip(_band_edges(length), self._trail))
         return _Stream(rng.uniform(*st.speed), length, bands, self._head)
 
     def _spawn_quote(self, text: str) -> _Stream:
+        """Create a stream that spells text."""
         length = len(text) + QUOTE_HOLD
         bands = (
             (1, QUOTE_BODY),
@@ -279,6 +295,7 @@ class RainDrawer(Drawer):
                 mark(x, rr)
 
     def _maybe_quote(self, dt: float) -> None:
+        """Start a quote in a free column when it is time."""
         every = self._style.quote_every
         if every is None or self._quotes is None:
             return
@@ -311,6 +328,15 @@ class SequenceDrawer(Drawer):
         scroll: float = 0.0,
         row_shift: int = 2,
     ) -> None:
+        """Create the drawer.
+
+        Args:
+            sequence: the characters to repeat.
+            fg: text color.
+            bg: background color.
+            scroll: columns per second; 0 for a still pattern.
+            row_shift: shift of each row relative to the one above.
+        """
         self._seq = sequence or " "
         self._fg = fg
         self._bg = bg
@@ -321,6 +347,7 @@ class SequenceDrawer(Drawer):
         self._w = 0
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Fill the buffer with the pattern."""
         self._w = len(buffer[0]) if buffer else 0
         for row in buffer:
             for px in row:
@@ -334,6 +361,7 @@ class SequenceDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Slide the pattern, if scroll is set."""
         if not (self._scroll and self._w):
             return
         self._phase += self._scroll * dt
@@ -344,6 +372,7 @@ class SequenceDrawer(Drawer):
         self._paint(buffer, mark)
 
     def _paint(self, buffer: list[list[Pixel]], mark: Mark) -> None:
+        """Write the pattern at the current offset, marking changes."""
         seq, n = self._seq, len(self._seq)
         for y, row in enumerate(buffer):
             base = self._offset + y * self._row_shift

@@ -1,29 +1,51 @@
+*This activity has been created as part of the 42 curriculum by ssalimi, banordma.*
+
 # A-Maze-ing
 
-A terminal maze generator and viewer. It carves a maze from a seed, solves it,
-writes it to a file in hexadecimal format, and displays it full-screen in the
-terminal with an animated theme and an interactive menu.
+## Description
 
-## Quick start
+A-Maze-ing is a maze generator and viewer for the terminal. From a
+configuration file, it:
 
-Requirements: Python 3.13+ and `python-dotenv`. The terminal must support
-24-bit color.
+1. generates a maze from a seed (same seed and settings, same maze), with a
+   "42" drawn in its centre by fully closed cells;
+2. makes it either **perfect** (exactly one path between entry and exit) or a
+   **Pac-Man-like board** (loops, almost no dead ends);
+3. finds the shortest path from the entry to the exit;
+4. writes the maze to a file, one hexadecimal digit per cell;
+5. displays it full-screen in the terminal, with themes, animations and an
+   interactive menu.
+
+The maze generation code is a standalone Python package, `mazegen`, that can
+be installed with `pip` and reused in other projects
+(see [Reusable code](#reusable-code-the-mazegen-package)).
+
+## Instructions
+
+### Requirements
+
+- Python 3.10 or later (developed and tested with Python 3.14).
+- `python-dotenv` (installed by `make install`).
+- A terminal that supports 24-bit color and Unicode box-drawing characters.
+
+### Install and run
 
 ```sh
-pip install python-dotenv
-make run            # same as: python a_maze_ing.py
+make install                     # pip install -r requirements.txt
+make run                         # python3 a_maze_ing.py .env
 ```
 
-Settings are read from [.env](.env) (see [Configuration](#configuration)).
+The configuration is read from [.env](.env)
+(see [Configuration file](#configuration-file)).
 
 ### Controls
 
 | Key | Action |
 |---|---|
-| `c` | Switch to the next color palette |
-| `s` | Show / hide the solution path |
+| `c` | Switch to the next color palette (walls, background, path) |
+| `s` | Show / hide the shortest path |
 | `r` | Rebuild the maze from the current seed |
-| `n` | Rebuild the maze with a new random seed |
+| `n` | Generate a new maze (new random seed) |
 | `t` | Turn the theme on / off |
 | `y` | Switch to the next theme |
 | `e` or `Ctrl-C` | Quit |
@@ -33,211 +55,321 @@ Settings are read from [.env](.env) (see [Configuration](#configuration)).
 
 | Target | What it does |
 |---|---|
-| `make run` | Runs the program |
+| `make install` | Installs the dependencies |
+| `make run` | Runs the program with the default configuration |
 | `make debug` | Runs it under `pdb` |
-| `make lint` / `make lint-strict` | `flake8` and `mypy` (normal or `--strict`) |
-| `make build` | Builds the wheel of the maze package into the project root |
+| `make lint` | `flake8` and `mypy` with the flags required by the subject |
+| `make lint-strict` | `flake8` and `mypy --strict` |
+| `make build` | Builds the `mazegen` package and copies the wheel to the repository root |
 | `make clean` | Deletes caches and build output |
 
-## How it runs
+## Configuration file
+
+### Format
+
+- One `KEY=VALUE` pair per line.
+- Lines starting with `#` are comments. Text after a `#` at the end of a line
+  is also ignored.
+- Values may be quoted (`BANNER_TITLE="AMAZEING"`).
+- Value types:
+
+| Type | Syntax | Example |
+|---|---|---|
+| int | a whole number | `SEED=42` |
+| bool | `TRUE` or `FALSE` (any case) | `PERFECT=FALSE` |
+| coordinates | `x,y`, 0-based, `0,0` is the top-left cell; or `NONE` to let the program choose | `ENTRY=0,0` |
+| color | `r, g, b` with each value from 0 to 255; or `NONE` for the terminal's default color | `WALLS_CLR=252, 107, 3` |
+| ratio | `horizontal,vertical` characters per cell | `TILE_RATIO=3,1` |
+| char | a single character | `ENTRYPOINT_CHAR="◇"` |
+| str | text | `OUTPUT_FILE=maze.txt` |
+
+Errors are handled in two ways:
+- **Required** keys (marked below): a missing or invalid value stops the
+  program with an error message.
+- Other keys: an invalid value is replaced by its default, and a warning is
+  written to `amazeing.log`.
+
+### Maze keys
+
+| Key | Type | Description |
+|---|---|---|
+| `WIDTH` | int | Width in cells |
+| `HEIGHT` | int | Height in cells |
+| `ENTRY` | coordinates | Entry cell |
+| `EXIT` | coordinates | Exit cell |
+| `OUTPUT_FILE` | str | File the maze is written to |
+| `PERFECT` | bool | **Required.** `TRUE`: perfect maze. `FALSE`: Pac-Man board |
+| `SEED` | int | **Required.** Seed of the random generator |
+| `CARVER_ALGO` | str | **Required.** Generation algorithm: `dfs` or `wilson` |
+| `SOLVER_ALGO` | str | **Required.** Shortest-path algorithm: `bfs` or `astar` |
+| `SOLVED` | bool | Show the shortest path at startup |
+
+### Display keys
+
+| Key | Type | Description |
+|---|---|---|
+| `THEME_ON` | bool | Use the theme in `THEME_NAME`. `FALSE` uses `default` |
+| `THEME_NAME` | str | `default` or `matrix` |
+| `TILE_RATIO` | ratio | **Required.** Characters per cell, horizontally and vertically |
+| `CENTER_MAZE` | bool | Center the maze horizontally in the terminal |
+| `DISPLAY_BANNER` | bool | Show the title banner above the maze |
+| `TOP_PADDING`, `BOT_PADDING`, `LEFT_PADDING`, `RIGHT_PADDING` | int | Empty lines / columns around the maze |
+| `EXPAND_COLOR_TO_FULL_TERMINAL` | bool | Paint the background color up to the terminal's right edge |
+| `ENTRYPOINT_CHAR`, `EXITPOINT_CHAR` | char | Characters marking the entry and the exit |
+| `BACKGROUND_CLR`, `WALLS_CLR`, `TRAIL_CLR` | color | Background, walls and shortest-path colors |
+| `ENTRYPOINT_CLR`, `EXITPOINT_CLR` | color | Entry and exit colors |
+| `TOP_PADDING_CLR`, `BOT_PADDING_CLR`, `LEFT_PADDING_CLR`, `RIGHT_PADDING_CLR` | color | Padding colors |
+| `BANNER_TITLE` | str | Text of the banner |
+| `BANNER_TITLE_CLR`, `BANNER_FRAME_CLR`, `BANNER_BCKG_CLR` | color | Banner colors |
+| `BANNER_TOP_CHAR`, `BANNER_BOT_CHAR`, `BANNER_LEFT_CHAR`, `BANNER_RIGHT_CHAR` | str | Characters of the banner's frame (repeated if longer than one) |
+| `BANNER_CORNER_TOPLEFT_CHAR`, `BANNER_CORNER_TOPRIGHT_CHAR`, `BANNER_CORNER_BOTLEFT_CHAR`, `BANNER_CORNER_BOTRIGHT_CHAR` | char | Corners of the banner's frame |
+
+A theme can override most display keys. The comments in [.env](.env) say
+which ones.
+
+## Output file
+
+The maze is written to `OUTPUT_FILE`:
+
+- one line per row, one hexadecimal digit per cell. Each digit is the sum of
+  its closed walls: North = 1, East = 2, South = 4, West = 8 (`F` = fully
+  closed, as in the "42");
+- an empty line;
+- the entry coordinates, then the exit coordinates (`x,y`);
+- the shortest path from entry to exit, as letters `N`, `E`, `S`, `W`.
+
+Every line ends with `\n`.
+
+## Maze generation
+
+### Algorithms
+
+Two algorithms are available, chosen with `CARVER_ALGO`:
+
+- **`dfs`: randomized depth-first search** (the "recursive backtracker"),
+  used by default. Start from a cell, move to a random unvisited neighbour
+  and remove the wall between them; when stuck, go back until a cell has an
+  unvisited neighbour. It produces long, winding corridors.
+- **`wilson`: Wilson's algorithm.** Random walks from unvisited cells, with
+  their loops erased, until they reach the maze. Every possible perfect maze
+  is equally likely, so the result has no visual bias.
+
+Both produce a perfect maze (a spanning tree of the grid). When
+`PERFECT=FALSE`, a second step, **braiding**, turns it into a Pac-Man board:
+every dead end gets one more wall removed, which creates loops. When that
+would open a 2×2 area, another wall of that area is closed instead, so
+corridors are never more than one cell wide.
+
+The 42 cells are marked before carving and never carved, so they stay fully
+closed and every other cell stays reachable. The 42 is centred on the maze's
+centre cell, which is an open cell of the pattern, so the centre is always a
+corridor. Mazes smaller than 9×7 have no room for it: they are generated
+without the 42, and a warning is written to `amazeing.log`.
+
+The shortest path is found with `SOLVER_ALGO`: breadth-first search (`bfs`)
+or A\* with the Manhattan distance (`astar`). Both return a shortest path.
+
+### Why these algorithms
+
+> **TODO (team):** check this reflects your own reasons, and adjust it.
+
+- The recursive backtracker is short to write and easy to explain, and its
+  long corridors make mazes that are fun to look at and to solve.
+- Wilson's algorithm was added for comparison: it gives uniform mazes, at the
+  cost of a longer generation on large grids.
+- Braiding after generation lets both algorithms make both kinds of maze, so
+  the "perfect" and "Pac-Man" modes don't need separate generators.
+
+## Reusable code: the `mazegen` package
+
+The [maze/](maze/) folder is a standalone package: it only uses the Python
+standard library, and nothing in it depends on the rest of the project
+(display, configuration, output file). It is packaged as `mazegen`; the wheel
+is at the root of the repository (`mazegen-1.0.0-py3-none-any.whl`).
+
+### Install
+
+```sh
+pip install mazegen-1.0.0-py3-none-any.whl
+```
+
+To rebuild it from the sources (needs `pyproject.toml` and the `maze/`
+folder):
+
+```sh
+python3 -m venv venv && source venv/bin/activate
+pip install build
+python3 -m build                  # creates dist/mazegen-1.0.0.tar.gz and .whl
+```
+
+The package is installed as `mazegen`, and imported as `maze`.
+
+### Basic example
+
+```python
+from maze import Maze
+
+m = Maze(20, 15, seed=42)         # 20x15 cells, reproducible
+path = m.resolve()                # shortest path, entry to exit
+print(m)                          # ASCII view: S entry, E exit, . path, # 42
+```
+
+### Parameters
+
+```python
+Maze(
+    width, height,                # size in cells
+    seed=None,                    # int for a reproducible maze, None for random
+    perfect=True,                 # False: Pac-Man board with loops
+    entry=None, exit=None,        # (x, y), 0-based; None to choose automatically
+    carver="dfs",                 # "dfs" or "wilson"
+    solver="bfs",                 # "bfs" or "astar"
+)
+```
+
+Invalid parameters (an entry on the 42, entry equal to exit…) raise
+`maze.MazeErr` with a readable message.
+
+### Accessing the structure
+
+`m.grid` is a list of rows, each a list of tiles, indexed `m.grid[y][x]`.
+The grid has a one-tile border ring, so the maze's cell `(x, y)` is
+`m.grid[y + 1][x + 1]`.
+
+Each tile has:
+
+| Attribute | Meaning |
+|---|---|
+| `x`, `y` | Grid coordinates (subtract 1 for maze coordinates) |
+| `walls` | `{"N": bool, "E": bool, "S": bool, "W": bool}`, `True` = closed |
+| `neighbours` | `{"N": tile, ...}`, the adjacent tiles |
+| `isLogo` | `True` for the cells of the "42" |
+| `isSolution` | `True` for the cells of the path, after `resolve()` |
+
+```python
+for row in m.grid[1:-1]:          # skip the border ring
+    for tile in row[1:-1]:
+        print(tile.x - 1, tile.y - 1, tile.walls)
+```
+
+### Accessing the solution
+
+```python
+path = m.resolve()                # list of tiles, from m.entry to m.exit
+coords = [(t.x - 1, t.y - 1) for t in path]
+```
+
+`m.entry` and `m.exit` are the entry and exit tiles.
+
+## Advanced features
+
+- **Two generation algorithms** (`dfs`, `wilson`) and **two solvers**
+  (`bfs`, `astar`), chosen in the configuration.
+- **Themes**: `default` (solid colors and a framed banner) and `matrix`
+  (falling green "digital rain" with quotes hidden in it). A theme is a folder
+  in `themes/` with a `register()` function; it appears in the `y` cycle
+  automatically. A `pac_man` theme is in progress.
+- **Animated, full-screen rendering**: only the characters that changed are
+  redrawn, each frame is sent at once (no flickering), and the terminal is
+  restored on exit, even after `Ctrl-C` or an error.
+- **Scrolling** when the maze is taller than the terminal.
+- **Configurable display**: colors, characters, paddings, cell size, banner.
+
+## Project structure
 
 ```
 a_maze_ing.py
-  ├─ config.load_config()          read and check .env
+  ├─ config.load_config()           read and check the configuration file
   ├─ themes_loader.activate_theme() load the theme, apply its overrides
   ├─ app.build_regions()            cut the screen into regions
-  ├─ app.build_maze()               carve, solve, write maze.txt
+  ├─ app.build_maze()               generate, solve, write the output file
   ├─ app.attach_drawers()           one drawer per region, from the theme
-  └─ render.run()                   main loop: input → simulate → draw
+  └─ render.run()                   main loop: input → animate → draw
 ```
 
-## Project layout
-
-### Entry point and app state
-
-- **[a_maze_ing.py](a_maze_ing.py)**: entry point. Loads the configuration,
-  builds everything once, then hands over to `render.run()`. Errors during
-  configuration stop the program before the screen is taken over.
-- **[app.py](app.py)**: the operations that (re)build the program state. Both
-  startup and the menu commands use them:
-  - `build_maze()` creates a maze from the config, solves it and writes the output file.
-  - `build_regions()` computes the layout.
-  - `attach_drawers()` gives each region its drawer from the current theme.
-  - `switch_theme()` applies a theme change.
-- **[globals.py](globals.py)**: shared state and constants: the config, the
-  current maze, theme and regions, the frame rate, the terminal size, the scroll
-  offset, and the wall-junction characters.
-
-### Configuration
-
-- **[config.py](config.py)**: reads `.env` into a `Settings` object. Each key
-  has a type, a default, and two flags:
-  - **critical**: a bad value stops the program. Otherwise a warning is logged
-    and the default is used.
-  - **themeable**: a theme is allowed to override it.
-
-  `Settings` looks values up in three layers: runtime changes (menu commands),
-  then theme overrides, then `.env`.
-- **[.env](.env)**: every setting, with comments: maze size, seed, perfect or
-  not, entry and exit, algorithms, layout, characters, colors, banner and theme.
-- **[errors.py](errors.py)**: `ConfigErr`, cross-setting checks (`validate`),
-  and a debug check that the regions line up.
-- **[logger.py](logger.py)**: warnings go to `amazeing.log`. The terminal is
-  busy with the maze, so nothing is printed while it runs.
-
-### The maze: [maze/](maze/)
-
-A standalone package with no dependency on the rest of the project. It is
-packaged on its own with `make build`.
-
-- **[amazeing.py](maze/amazeing.py)**: the `Maze` class. Builds the grid (with
-  a ring of border tiles and the "42" logo in the center), picks the entry and
-  exit, carves, and `resolve()` marks the solution path.
-- **[tiles.py](maze/tiles.py)**: tile types. `Tile` is a normal cell, `Limit`
-  is the outer border, and `LogoTile` is a cell of the 42 logo that is never
-  carved. Each tile knows its walls and neighbours.
-- **[dirs.py](maze/dirs.py)**: directions (`N`, `E`, `S`, `W`), their opposites
-  and their `(dx, dy)` steps.
-- **[carve/](maze/carve/)**: maze generation.
-  - `dfs`: randomized depth-first search. Gives long, winding corridors.
-  - `wilson`: Wilson's algorithm (loop-erased random walks). Gives uniform,
-    unbiased mazes.
-  - `utils`: carving helpers. `braid()` adds loops for imperfect mazes
-    (`PERFECT=FALSE`) without creating open 2×2 areas.
-  - `endpoints`: places the entry and exit, from the config or automatically.
-- **[solvers.py](maze/solvers.py)**: shortest path with `bfs` or `astar`.
-- **[errors.py](maze/errors.py)**: `MazeErr` and `InvalidTileErr`.
-
-### Output file
-
-- **[output_file.py](output_file.py)**: writes the maze to `OUTPUT_FILE`
-  (`maze.txt` by default), using:
-  - one hex digit per cell, the sum of its closed walls (N=1, E=2, S=4, W=8);
-  - a blank line;
-  - the entry coordinates, then the exit coordinates;
-  - the shortest path as a string of letters such as `EESSW`.
-
-### Layout: regions and pixels
-
-The screen is split into **regions**, each filled by one **drawer**:
-
-```
-┌────────────┬───────────┬──────────────┬────────────┬─────────────┐
-│ extra-left │ padd-left │ padd-top     │ padd-right │ extra-right │
-│            │           │ banner       │            │             │
-│            │           │ maze         │            │             │
-│            │           │ padd-bottom  │            │             │
-├────────────┴───────────┴──────────────┴────────────┴─────────────┤
-│ menu                                                             │
-└──────────────────────────────────────────────────────────────────┘
-```
-
-- **[dimensions.py](dimensions.py)**: computes the position and size of every
-  region from the maze size, `TILE_RATIO` (characters per maze cell),
-  paddings, centering and the terminal width.
-- **[regions.py](regions.py)**: `Region` owns a pixel buffer and a set of
-  "dirty" pixels that changed since the last frame. `redraw()` rebuilds the
-  buffer from scratch, `update()` advances the animation.
-- **[pixels.py](pixels.py)**: `Pixel` is one character with a foreground and a
-  background color. `px_to_str()` turns it into an ANSI escape string.
-
-### Drawing: [drawers/](drawers/)
-
-A drawer has two methods:
-- `draw(buffer, config)`: paints the whole buffer. Called on startup and after
-  each menu command.
-- `update(buffer, dt, mark)`: animates. Every changed pixel is reported with
-  `mark(x, y)`.
-
-Files:
-- **[base.py](drawers/base.py)**: the `Drawer` interface, `EmptyDrawer`, and
-  `MenuDrawer` (the list of actions).
-- **[maze_drawer.py](drawers/maze_drawer.py)**: draws the maze. Walls with
-  joined box-drawing characters, the solution trail, the entry and exit
-  markers, and the 42 logo in block characters.
-- **[utils.py](drawers/utils.py)**: helpers for centering, repeating patterns,
-  pasting sprites, and converting between maze cells and buffer positions.
-- **[art_loader.py](art_loader.py)**: reads `.pxart` pixel-art files (a small
-  binary format) and stamps them onto a buffer.
-
-### Themes: [themes/](themes/) and [themes_loader.py](themes_loader.py)
-
-A theme is a package in `themes/` that provides:
-- `register(config, maze)`, which returns a drawer for every region;
-- optionally, `OVERRIDES`, a dict of themeable settings (colors, paddings,
-  banner…).
-
-[themes_loader.py](themes_loader.py) is the only place that decides whether a
-theme is valid. It lists the available themes, picks the active one
-(`THEME_NAME` if `THEME_ON`, otherwise `default`), and runs `register()`.
-
-| Theme | Description |
+| Path | Contents |
 |---|---|
-| `default` | Solid colored paddings, a framed banner, and the maze |
-| `matrix` | Falling green "digital rain" on the sides with quotes inside it, and animated strips above and below |
-| `pac_man` | Work in progress. Skipped until it defines `register()` |
+| [a_maze_ing.py](a_maze_ing.py) | Entry point |
+| [app.py](app.py) | Builds and rebuilds the maze, layout and drawers (used at startup and by the menu) |
+| [config.py](config.py), [errors.py](errors.py) | Reading and checking the configuration |
+| [maze/](maze/) | The reusable `mazegen` package: `Maze`, tiles, carvers, solvers |
+| [output_file.py](output_file.py) | Writes the hexadecimal output file |
+| [dimensions.py](dimensions.py), [regions.py](regions.py), [pixels.py](pixels.py) | Screen layout: regions made of colored characters |
+| [drawers/](drawers/) | Draw the maze and the menu into a region |
+| [themes/](themes/), [themes_loader.py](themes_loader.py) | Themes and how they are loaded |
+| [menu/](menu/) | Keyboard input, commands and menu layout |
+| [render/](render/), [viewport.py](viewport.py) | Main loop, terminal output, scrolling |
+| [dev/](dev/) | Developer tools (pixel-art converter, debug helpers), not used at runtime |
 
-To add a theme, create `themes/<name>/__init__.py` with a `register()`
-function. It shows up in the `y` cycle automatically.
+## Team and project management
 
-### Menu and input: [menu/](menu/)
+> **TODO (team):** fill in this section; only you know it.
 
-- **[keyboard.py](menu/keyboard.py)**: non-blocking key reading, for Linux,
-  macOS and Windows. Turns arrow and page keys into `"UP"`, `"DOWN"`,
-  `"PGUP"`, `"PGDN"`.
-- **[commands.py](menu/commands.py)**: the list of commands (key, name,
-  description, function, optional indicator).
-- **[input_commands.py](menu/input_commands.py)**: what each command does. A
-  command changes the config or the app state, then returns `True` to ask for a
-  full redraw.
-- **[inputs.py](menu/inputs.py)**: sends each key to scrolling or to a
-  command. Returns how much needs redrawing: nothing, a repaint (scroll), or a
-  rebuild (command).
-- **[indicators.py](menu/indicators.py)**: the live values shown in the menu
-  (`ON`/`OFF`, theme name).
-- **[menu.py](menu/menu.py)**: computes the menu's layout, wrapping text to
-  the terminal width.
+### Roles
 
-### Rendering: [render/](render/) and [viewport.py](viewport.py)
+- **ssalimi**: TODO (e.g. which parts you designed and wrote)
+- **banordma**: TODO
 
-- **[render.py](render/render.py)**: the main loop. Each pass reads input,
-  advances the animations at a fixed 60 Hz, and outputs a frame at `FPS`.
-  - Only dirty pixels are sent, using cursor-positioning escape codes, so the
-    terminal never has to redraw everything.
-  - Each frame is wrapped in synchronized output, so there's no tearing.
-  - The program runs in the terminal's **alternate screen**: the shell is
-    restored as it was on exit, even after `Ctrl-C` or a crash.
-- **[viewport.py](viewport.py)**: the alternate screen has no scrollback, so
-  scrolling is done by the program. `VIEW_Y` is the first layout row shown on
-  screen.
+### Planning
 
-### Developer tools: [dev/](dev/)
+- **Initial plan**: TODO (the steps and the order you had planned)
+- **How it evolved**: TODO (what took longer, what was added or dropped,
+  for example the Pac-Man mode and the themes)
 
-- **[convert_pixel_art.py](dev/convert_pixel_art.py)**: converts a PNG into a
-  `.pxart` file. Needs Pillow, only when you run it.
-- **[helper_drawer.py](dev/helper_drawer.py)**: `NumericalDrawer`, which writes
-  row and column numbers into a region to check its dimensions.
-- **[debug.py](dev/debug.py)**: debugging snippets.
-- **[assets/](dev/assets/)**: source images for the pixel art.
-- **[TODOlist](dev/TODOlist)**: the team's task list.
+### What worked well, what could be improved
 
-## Configuration
+- TODO
+- TODO
 
-Every setting is documented in [.env](.env). The most used:
+### Tools
 
-| Key | Meaning |
-|---|---|
-| `MAZE_WIDTH`, `MAZE_HEIGHT` | Size in cells (minimum 9×7) |
-| `SEED` | Same seed and same settings give the same maze |
-| `PERFECT` | `TRUE`: exactly one path between any two cells. `FALSE`: adds loops |
-| `ENTRY`, `EXIT` | `x,y` coordinates, or `NONE` to let the program choose |
-| `CARVER_ALGO` | `dfs` or `wilson` |
-| `SOLVER_ALGO` | `bfs` or `astar` |
-| `SOLVED` | Show the solution path at startup |
-| `TILE_RATIO` | Characters per cell, horizontally and vertically (e.g. `3,1`) |
-| `THEME_ON`, `THEME_NAME` | Theme to use |
-| `OUTPUT_FILE` | Where the hex maze is written |
+- Git and GitHub, `make`, `flake8`, `mypy`, `autopep8`, Python `venv`,
+  `build`.
+- VS Code.
+- TODO: add anything else you used (task list in [dev/TODOlist](dev/TODOlist),
+  communication, etc.).
 
-Invalid values are logged in `amazeing.log` and replaced by their default,
-except for critical keys (`SEED`, `PERFECT`, algorithms, `TILE_RATIO`), which
-stop the program with an error message.
+## Resources
+
+### References
+
+- [Maze generation algorithm](https://en.wikipedia.org/wiki/Maze_generation_algorithm),
+  Wikipedia: overview of DFS, Wilson's, Prim's and Kruskal's algorithms.
+- Jamis Buck, [Maze Generation: Recursive Backtracking](https://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking)
+  and [Maze Generation: Wilson's algorithm](https://weblog.jamisbuck.org/2011/1/20/maze-generation-wilson-s-algorithm).
+- Jamis Buck, *Mazes for Programmers*, Pragmatic Bookshelf, 2015 (braid
+  mazes, dead-end removal).
+- David B. Wilson, *Generating random spanning trees more quickly than the
+  cover time*, STOC 1996.
+- [A\* search algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)
+  and [Breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search),
+  Wikipedia.
+- [Python Packaging User Guide](https://packaging.python.org/en/latest/tutorials/packaging-projects/):
+  `pyproject.toml`, building wheels.
+- [ANSI escape code](https://en.wikipedia.org/wiki/ANSI_escape_code),
+  Wikipedia: colors, cursor movement, alternate screen.
+- [mypy](https://mypy.readthedocs.io/) and [flake8](https://flake8.pycqa.org/)
+  documentation.
+
+### Use of AI
+
+> **TODO (team):** complete this list with every other use of AI in the
+> project (the subject asks which tasks and which parts), and keep the
+> last sentence only if it is true.
+
+AI (Claude, in VS Code) was used for:
+
+- **Packaging**: finding why the first wheel was empty (`pyproject.toml`
+  looked for a `mazegen` folder instead of `maze`), and how to test the wheel
+  in a separate virtual environment.
+- **Linting**: fixing the `mypy` errors in `menu/commands.py` and
+  `themes/default/__init__.py`, and the `flake8` style errors (line length,
+  blank lines, unused imports) across the project.
+- **Small additions to `Maze`**: the ASCII `__repr__`, and the `entry`,
+  `exit` properties and returned path of `resolve()`, for the package
+  documentation.
+- **Tooling**: setting up the VS Code formatter extension.
+- **Review**: checking the project against the subject, and restructuring
+  this README to include the required sections.
+
+All generated code was reviewed, tested and is understood by the team.

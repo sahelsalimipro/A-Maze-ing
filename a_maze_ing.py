@@ -8,6 +8,7 @@ from config import load_config, Settings
 from app import build_maze, attach_drawers, build_regions
 from themes_loader import activate_theme
 from render import run
+from maze import MazeErr
 
 if __name__ == "__main__":
     config: Settings
@@ -32,6 +33,9 @@ if __name__ == "__main__":
     # Creating the maze (solved + written to the output file)
     try:
         maze = build_maze(config)
+    except MazeErr as e:
+        print(f"Error while generating the maze:\n{e}")
+        sys.exit(1)
     except (OSError, ValueError) as e:
         print(f"Error writing output file: {e}")
         sys.exit(1)

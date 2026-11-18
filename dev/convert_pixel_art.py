@@ -103,6 +103,7 @@ def write_binary(
     colors: list[tuple[int, int, int]],
     indices: bytes,
 ) -> None:
+    """Write a converted image to out_path in the .pxart format."""
     with open(out_path, "wb") as f:
         f.write(MAGIC)
         f.write(struct.pack("<B", VERSION))
@@ -114,6 +115,7 @@ def write_binary(
 
 
 def main() -> None:
+    """Command-line entry point: convert one PNG to a .pxart file."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("png_path", type=Path, help="Path to the source PNG")
     parser.add_argument("out_path", type=Path,

@@ -13,6 +13,9 @@ class NumericalDrawer(Drawer):
     bg_clr = (204, 255, 0)
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
+        """Write column numbers on the first and last rows, and row
+        numbers on the first and last columns.
+        """
         for y, row in enumerate(buffer):
             for x, px in enumerate(row):
                 if y == 0 or y == len(buffer) - 1:
@@ -29,4 +32,5 @@ class NumericalDrawer(Drawer):
         dt: float,
         mark: Callable[[int, int], None]
     ) -> None:
+        """Nothing to animate."""
         return

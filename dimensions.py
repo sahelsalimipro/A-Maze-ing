@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 
 class Rect(NamedTuple):
+    """Position (x, y) and size (w, h) of a region, in characters."""
     x: int
     y: int
     w: int
@@ -43,9 +44,17 @@ def _split_horizontal_space(
 
 
 def resolve_dimensions(config: Settings) -> dict[str, Rect]:
+    """Compute the position and size of every region.
+
+    Uses the maze size, TILE_RATIO, the paddings, the banner and the
+    terminal width.
+
+    Returns:
+        A Rect for each region name.
+    """
     ratio_x, ratio_y = config["TILE_RATIO"]
-    ct_cols = config["MAZE_WIDTH"]   # doesn't include Limit border tiles
-    ct_rows = config["MAZE_HEIGHT"]
+    ct_cols = config["WIDTH"]   # doesn't include Limit border tiles
+    ct_rows = config["HEIGHT"]
 
     maze_width: int = _total_buf(ct_cols, ratio_x)
     maze_height: int = _total_buf(ct_rows, ratio_y)

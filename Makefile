@@ -8,7 +8,7 @@ debug:
 	python -m pdb a_maze_ing.py ".env"
 
 install:
-	@echo Installing --- Done
+	python3 -m pip install -r requirements.txt
 
 clean:
 	find . -type d -name "__pycache__" -prune -exec rm -rf {} +

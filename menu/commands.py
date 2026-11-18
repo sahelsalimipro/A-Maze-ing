@@ -11,6 +11,7 @@ INPUT_COMMAND = Literal["c", "s", "r", "n", "t", "y", "e"]
 
 
 class Command:
+    """One action of the menu, triggered by a key."""
     def __init__(
         self,
         name: str,
@@ -19,6 +20,15 @@ class Command:
         func: Callable[[], bool],
         indicator: Indicator | None = None,
     ) -> None:
+        """Create a command.
+
+        Args:
+            name: shown in the menu (upper-cased).
+            description: shown under the name.
+            input: the key that triggers it.
+            func: the action; returns True to ask for a full redraw.
+            indicator: optional live value shown in the menu.
+        """
         self.name: str = name.upper()
         self.description: str = description
         self.input: INPUT_COMMAND = input

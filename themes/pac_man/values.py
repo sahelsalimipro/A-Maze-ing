@@ -21,6 +21,7 @@ HEIGHT = (OUTSIDE_GAP * 2) + (WALL_SIZE * 2) + (INSIDE_GAP * 2) + BALL_SIZE
 
 @dataclass
 class Colors():
+    """Colors of the Pac-Man theme."""
     def __init__(
         self,
         bg_clr: tuple[int, int, int],
@@ -28,6 +29,7 @@ class Colors():
         ball_clr: tuple[int, int, int]
     ) -> None:
 
+        """Store the background, wall and pac-gum colors."""
         self.bg_clr = bg_clr
         self.wall_clr = wall_clr
         self.ball_clr = ball_clr

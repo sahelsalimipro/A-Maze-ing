@@ -4,6 +4,7 @@ PixelKind = Literal["content", "wall", "junction", "empty", "logo"]
 
 
 class Pixel:
+    """One character on screen, with its colors and what it shows."""
     def __init__(
         self,
         char: str = " ",
@@ -12,6 +13,14 @@ class Pixel:
         kind: PixelKind = "empty"
     ) -> None:
 
+        """Create a pixel.
+
+        Args:
+            char: the character displayed.
+            fg_clr: text color, or None for the terminal's default.
+            bg_clr: background color, or None for the default.
+            kind: what the pixel shows (wall, content, ...).
+        """
         self.char: str = char
         self.fg_clr: tuple[int, int, int] | None = fg_clr
         self.bg_clr: tuple[int, int, int] | None = bg_clr

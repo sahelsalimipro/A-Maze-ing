@@ -15,6 +15,15 @@ logger = logging.getLogger(__name__)
 def update_dirty_pixels(
     regions: tuple[Region, ...], clear: bool = False
 ) -> None:
+    """Write the changed pixels of every region to the terminal.
+
+    Moves the cursor only when needed, and skips pixels outside the
+    visible part of the screen.
+
+    Args:
+        regions: the regions to output.
+        clear: clear the screen first.
+    """
     parts: list[str] = []
     # (row, col), 0-based, where the terminal cursor is now
     cursor: tuple[int, int] | None = None
@@ -60,6 +69,11 @@ def repaint(regions: dict[str, Region]) -> None:
 
 def run(regions: dict[str, Region]) -> None:
 
+    """Main loop: read input, animate at a fixed rate, output frames.
+
+    Runs in the terminal's alternate screen, and restores the
+    terminal on exit, even after an error or Ctrl-C.
+    """
     STEP: float = globals.STEP
     acc: float = 0.0
     last: float = time.perf_counter()
@@ -120,6 +134,11 @@ def run(regions: dict[str, Region]) -> None:
 
 
 def _to_screen(lx: int, ly: int) -> tuple[int, int] | None:
+    """Convert layout position (lx, ly) to a screen (row, col).
+
+    Returns:
+        The position, or None if it is not visible.
+    """
     row, col = ly - globals.VIEW_Y, lx - globals.VIEW_X
     size = globals.TERMINAL_SIZE
     if 0 <= row < size.lines and 0 <= col < size.columns:
