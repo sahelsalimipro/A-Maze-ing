@@ -92,7 +92,7 @@ class MazeDrawer(Drawer):
         self._show_solution: bool = config["SOLVED"]
         self.fill_buffer(buffer)
         self._colorize(buffer)
-        self._paint_logo(buffer)
+        # self._paint_logo(buffer)
         return
 
     def update(
@@ -136,22 +136,26 @@ class MazeDrawer(Drawer):
                 if tile.walls["N"]:
                     for dx in range(ratio_x):
                         px = buffer[cy - 1][cx + dx]
-                        px.char = "─"
+                        # px.char = "─"
+                        px.char = "█"
                         px.kind = "wall"
                 if tile.walls["S"]:
                     for dx in range(ratio_x):
                         px = buffer[cy + ratio_y][cx + dx]
-                        px.char = "─"
+                        # px.char = "─"
+                        px.char = "█"
                         px.kind = "wall"
                 if tile.walls["W"]:
                     for dy in range(ratio_y):
                         px = buffer[cy + dy][cx - 1]
-                        px.char = "│"
+                        # px.char = "│"
+                        px.char = "█"
                         px.kind = "wall"
                 if tile.walls["E"]:
                     for dy in range(ratio_y):
                         px = buffer[cy + dy][cx + ratio_x]
-                        px.char = "│"
+                        # px.char = "│"
+                        px.char = "█"
                         px.kind = "wall"
 
         self._fill_junctions(buffer, ct_rows, ct_cols)

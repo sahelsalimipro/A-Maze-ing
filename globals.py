@@ -29,18 +29,31 @@ VIEW_X: int = 0
 TERMINAL_SIZE: terminal_size = get_terminal_size()
 
 # ----------   Junctions   ---------- #
+# JUNCTIONS_CHARS = {
+#     frozenset({"N"}): "│", frozenset({"S"}): "│",
+#     frozenset({"E"}): "─", frozenset({"W"}): "─",
+
+#     frozenset({"N", "S"}): "│", frozenset({"E", "W"}): "─",
+#     frozenset({"N", "E"}): "└", frozenset({"N", "W"}): "┘",
+#     frozenset({"S", "E"}): "┌", frozenset({"S", "W"}): "┐",
+
+#     frozenset({"N", "S", "E"}): "├", frozenset({"N", "S", "W"}): "┤",
+#     frozenset({"N", "E", "W"}): "┴", frozenset({"S", "E", "W"}): "┬",
+
+#     frozenset({"N", "S", "E", "W"}): "┼",
+# }
 JUNCTIONS_CHARS = {
-    frozenset({"N"}): "│", frozenset({"S"}): "│",
-    frozenset({"E"}): "─", frozenset({"W"}): "─",
+    frozenset({"N"}): "█", frozenset({"S"}): "█",
+    frozenset({"E"}): "█", frozenset({"W"}): "█",
 
-    frozenset({"N", "S"}): "│", frozenset({"E", "W"}): "─",
-    frozenset({"N", "E"}): "└", frozenset({"N", "W"}): "┘",
-    frozenset({"S", "E"}): "┌", frozenset({"S", "W"}): "┐",
+    frozenset({"N", "S"}): "█", frozenset({"E", "W"}): "█",
+    frozenset({"N", "E"}): "█", frozenset({"N", "W"}): "█",
+    frozenset({"S", "E"}): "█", frozenset({"S", "W"}): "█",
 
-    frozenset({"N", "S", "E"}): "├", frozenset({"N", "S", "W"}): "┤",
-    frozenset({"N", "E", "W"}): "┴", frozenset({"S", "E", "W"}): "┬",
+    frozenset({"N", "S", "E"}): "█", frozenset({"N", "S", "W"}): "█",
+    frozenset({"N", "E", "W"}): "█", frozenset({"S", "E", "W"}): "█",
 
-    frozenset({"N", "S", "E", "W"}): "┼",
+    frozenset({"N", "S", "E", "W"}): "█",
 }
 
 # ----------     Regions    ---------- #
