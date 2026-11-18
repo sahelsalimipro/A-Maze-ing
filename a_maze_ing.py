@@ -24,7 +24,6 @@ if __name__ == "__main__":
         print(f"ABORTING EARLY Error during configuration:\n{e}")
         sys.exit(1)
 
-
     # Ruling to ensure dimensions of each region. 1 region = 1 drawer
     globals.THEME_MODULE = module
     build_regions()

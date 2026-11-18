@@ -38,10 +38,13 @@ from PIL import Image
 
 MAGIC = b"AMZP"
 VERSION = 1
-MAX_COLORS = 255  # index 255 (or fewer, == palette_count) is reserved for transparent
+# index 255 (or fewer, == palette_count) is reserved for transparent
+MAX_COLORS = 255
 
 
-def convert(png_path: Path) -> tuple[int, int, list[tuple[int, int, int]], bytes]:
+def convert(
+    png_path: Path
+) -> tuple[int, int, list[tuple[int, int, int]], bytes]:
     """
     Read the PNG at native size (no resizing) and return
     (width, height, colors, indices):
@@ -53,7 +56,8 @@ def convert(png_path: Path) -> tuple[int, int, list[tuple[int, int, int]], bytes
     width, height = img.size
 
     palette: dict[tuple[int, int, int], int] = {}
-    raw_indices: list[int] = []  # -1 placeholder for transparent, fixed up below
+    # -1 placeholder for transparent, fixed up below
+    raw_indices: list[int] = []
 
     for y in range(height):
         for x in range(width):
@@ -73,19 +77,22 @@ def convert(png_path: Path) -> tuple[int, int, list[tuple[int, int, int]], bytes
             if idx is None:
                 if len(palette) >= MAX_COLORS:
                     raise ValueError(
-                        f"Image has more than {MAX_COLORS} unique opaque colors "
+                        f"Image has more than {MAX_COLORS} unique opaque "
+                        "colors "
                         "-- reduce the palette in your art tool."
                     )
                 idx = len(palette)
                 palette[color] = idx
             raw_indices.append(idx)
 
-    # sentinel is guaranteed distinct from every real index (0..palette_count-1),
-    # regardless of how many colors were used -- no separate reserved value needed
+    # sentinel is guaranteed distinct from every real index
+    # (0..palette_count-1), regardless of how many colors were used
+    # -- no separate reserved value needed
     sentinel = len(palette)
     indices = bytes(sentinel if v == -1 else v for v in raw_indices)
 
-    colors = [color for color, _ in sorted(palette.items(), key=lambda kv: kv[1])]
+    colors = [color for color, _ in sorted(
+        palette.items(), key=lambda kv: kv[1])]
     return width, height, colors, indices
 
 
@@ -109,7 +116,8 @@ def write_binary(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("png_path", type=Path, help="Path to the source PNG")
-    parser.add_argument("out_path", type=Path, help="Path to write the .pxart binary file")
+    parser.add_argument("out_path", type=Path,
+                        help="Path to write the .pxart binary file")
     args = parser.parse_args()
 
     width, height, colors, indices = convert(args.png_path)
@@ -118,7 +126,8 @@ def main() -> None:
     n_transparent = indices.count(len(colors))
     size = args.out_path.stat().st_size
     print(
-        f"Wrote {args.out_path} ({width}x{height} pixels, {len(colors)} colors, "
+        f"Wrote {args.out_path} ({width}x{height} pixels, "
+        f"{len(colors)} colors, "
         f"{n_transparent} transparent cells, {size} bytes)"
     )
 

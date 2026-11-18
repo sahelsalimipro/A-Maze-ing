@@ -1,9 +1,10 @@
 from typing import Callable
 
-from .values import COLORS, HEIGHT, OUTSIDE_GAP, INSIDE_GAP, WALL_SIZE
+from .values import COLORS, OUTSIDE_GAP, INSIDE_GAP, WALL_SIZE  # , HEIGHT
 from config import Settings
-from drawers import Drawer, MazeDrawer, MenuDrawer
+from drawers import Drawer  # , MazeDrawer, MenuDrawer
 from pixels import Pixel
+
 
 class PacManDrawer(Drawer):
 
@@ -11,8 +12,8 @@ class PacManDrawer(Drawer):
         pass
 
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
-        height: int = HEIGHT
-        width: int = len(buffer[0])
+        # height: int = HEIGHT
+        # width: int = len(buffer[0])
 
         idx: int = 0
         #  Outside Gap
@@ -49,7 +50,13 @@ class PacManDrawer(Drawer):
 
         return
 
-    def update(self, buffer: list[list[Pixel]], dt: float, mark: Callable[[int, int], None]) -> None:
+    def update(
+            self,
+            buffer: list[list[Pixel]],
+            dt: float,
+            mark: Callable[[int, int], None]
+    ) -> None:
+
         pass
         return
 

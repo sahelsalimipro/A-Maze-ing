@@ -86,7 +86,9 @@ def activate_theme(config: Settings) -> ModuleType:
     return module
 
 
-def load_theme(module: ModuleType, config: Settings, maze: Maze) -> dict[str, Drawer]:
+def load_theme(
+    module: ModuleType, config: Settings, maze: Maze
+) -> dict[str, Drawer]:
     """Runs the theme's register() and checks it returned a drawer for
     every region. Raises ConfigErr otherwise."""
 
@@ -97,10 +99,14 @@ def load_theme(module: ModuleType, config: Settings, maze: Maze) -> dict[str, Dr
         raise ConfigErr(f"Theme {name!r}'s register() raised: {e}") from e
 
     if not isinstance(drawers, dict):
-        raise ConfigErr(f"Theme {name!r}'s register() must return a dict, got {type(drawers).__name__}")
+        raise ConfigErr(
+            f"Theme {name!r}'s register() must return a dict, "
+            f"got {type(drawers).__name__}")
 
     missing = [r for r in globals.REGIONS_NAMES if r not in drawers]
     if missing:
-        raise ConfigErr(f"Theme {name!r}'s register() has no drawer for: {', '.join(missing)}")
+        raise ConfigErr(
+            f"Theme {name!r}'s register() has no drawer for: "
+            f"{', '.join(missing)}")
 
     return drawers

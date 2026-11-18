@@ -1,9 +1,11 @@
 from typing import Literal
 
 from pixels import Pixel
-Anchor = Literal["top-left", "top-right", "bottom-left", "bottom-right", "center"]
+Anchor = Literal["top-left", "top-right",
+                 "bottom-left", "bottom-right", "center"]
 
 # Utilities functions, that many different drawers may require.
+
 
 def _center(text: str, width: int, space_char: str = ' ') -> str:
     """Centers a given text in n width, using space by default"""
@@ -13,6 +15,7 @@ def _center(text: str, width: int, space_char: str = ' ') -> str:
     pad_left = pad_total // 2
     return space_char * pad_left + text + space_char * (pad_total - pad_left)
 
+
 def _fill_sequence(seq: str, length: int) -> str:
     """Cycle `seq` until it exactly fills `length` characters."""
     if length <= 0:
@@ -21,6 +24,7 @@ def _fill_sequence(seq: str, length: int) -> str:
         return " " * length
     full, rem = divmod(length, len(seq))
     return seq * full + seq[:rem]
+
 
 def _anchor_offset(
     buf_h: int, buf_w: int, content_h: int, content_w: int, anchor: Anchor
@@ -39,6 +43,7 @@ def _anchor_offset(
             return (buf_h - content_h) // 2, (buf_w - content_w) // 2
         case _:
             raise ValueError(f"unknown anchor {anchor!r}")
+
 
 def blit(
     buffer: list[list[Pixel]],
@@ -74,9 +79,11 @@ def blit(
         buffer[row0 + r][col_a:col_b] = content[r][col_start:col_end]
     return
 
+
 def _scale(idx: int, ratio: int) -> int:
     """Buffer coordinate where content-block `idx` begins, on one axis."""
     return idx * (ratio + 1) + 1
+
 
 def _total_buf(n: int, ratio: int) -> int:
     """Total buffer length needed for `n` content blocks on one axis."""

@@ -15,7 +15,8 @@ def wilson(maze: Maze, start: BaseTile, perfect: bool) -> None:
     rng = maze._rng
     cells = maze.components[maze.component_of[start]]
 
-    in_maze: set[BaseTile] = {start}   # the root; any root gives an unbiased result
+    # the root; any root gives an unbiased result
+    in_maze: set[BaseTile] = {start}
 
     # Shuffling once, then walking the list in order, is equivalent to
     # repeatedly picking a random cell that is not yet in the maze.

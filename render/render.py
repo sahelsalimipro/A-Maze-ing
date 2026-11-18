@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Any
 import logging
 import sys
 import time
@@ -12,7 +11,10 @@ from viewport import clamp_view
 
 logger = logging.getLogger(__name__)
 
-def update_dirty_pixels(regions: tuple[Region, ...], clear: bool = False) -> None:
+
+def update_dirty_pixels(
+    regions: tuple[Region, ...], clear: bool = False
+) -> None:
     parts: list[str] = []
     # (row, col), 0-based, where the terminal cursor is now
     cursor: tuple[int, int] | None = None
@@ -24,7 +26,8 @@ def update_dirty_pixels(regions: tuple[Region, ...], clear: bool = False) -> Non
             if target is None:
                 continue
 
-            if cursor != target:             # skip the move if we're already there
+            # skip the move if we're already there
+            if cursor != target:
                 parts.append(f"\033[{target[0] + 1};{target[1] + 1}H")
 
             parts.append(px_to_str(region.buf[y][x]))
@@ -37,7 +40,6 @@ def update_dirty_pixels(regions: tuple[Region, ...], clear: bool = False) -> Non
         return
     sys.stdout.write("\033[?2026h" + "".join(parts) + "\033[0m\033[?2026l")
     sys.stdout.flush()
-
 
 
 def render(regions: dict[str, Region], clear: bool = False) -> None:
@@ -56,9 +58,7 @@ def repaint(regions: dict[str, Region]) -> None:
     update_dirty_pixels(tuple(regions.values()), clear=True)
 
 
-
 def run(regions: dict[str, Region]) -> None:
-
 
     STEP: float = globals.STEP
     acc: float = 0.0
@@ -117,6 +117,7 @@ def run(regions: dict[str, Region]) -> None:
         # - stop alternate scroll - exit alt screen
         sys.stdout.write("\033[?2026l\033[0m\033[?25h\033[?1007l\033[?1049l")
         sys.stdout.flush()
+
 
 def _to_screen(lx: int, ly: int) -> tuple[int, int] | None:
     row, col = ly - globals.VIEW_Y, lx - globals.VIEW_X

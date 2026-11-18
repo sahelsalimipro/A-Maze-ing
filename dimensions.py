@@ -8,6 +8,7 @@ import globals
 if TYPE_CHECKING:
     from config import Settings
 
+
 class Rect(NamedTuple):
     x: int
     y: int
@@ -24,10 +25,10 @@ def _split_horizontal_space(
     if center:
         target_left = free // 2
         target_right = free - target_left
-    elif left + right > free:                   # Not enough room: cut, keep ratio
+    elif left + right > free:   # Not enough room: cut, keep ratio
         target_left = free * left // (left + right)
         target_right = free - target_left
-    else:                                       # Fits: keep paddings, spare goes right
+    else:                       # Fits: keep paddings, spare goes right
         target_left = left
         target_right = free - left
 
@@ -65,7 +66,7 @@ def resolve_dimensions(config: Settings) -> dict[str, Rect]:
         config.get("CENTER_MAZE", False),
     )
 
-    x_mid = xt_l + padd_l                       # left edge of the centre column
+    x_mid = xt_l + padd_l       # left edge of the centre column
     x_right = x_mid + maze_width                # where padd-right starts
 
     heights = {
@@ -86,7 +87,8 @@ def resolve_dimensions(config: Settings) -> dict[str, Rect]:
     }
 
     y = 0
-    for name in globals.MID_REGION_ORDER:       # same order render() stacks them in
+    # same order render() stacks them in
+    for name in globals.MID_REGION_ORDER:
         rects[name] = Rect(x_mid, y, maze_width, heights[name])
         y += heights[name]
 

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from drawers import Drawer
 from pixels import Pixel
@@ -55,11 +55,13 @@ class Region():
 
     def redraw(self, config: Settings) -> None:
         """Rebuild the buffer from scratch and mark every pixel for output."""
-        self.buf = [[Pixel() for _ in range(self.width)] for _ in range(self.height)]
+        self.buf = [[Pixel() for _ in range(self.width)]
+                    for _ in range(self.height)]
         self.dirty.clear()
         self.fill_buffer(config)
         self.mark_all()
 
     def mark_all(self) -> None:
         """Marks every pixel for output, e.g. after the view scrolled."""
-        self.dirty = {(x, y) for y in range(self.height) for x in range(self.width)}
+        self.dirty = {(x, y) for y in range(self.height)
+                      for x in range(self.width)}

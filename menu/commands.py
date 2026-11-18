@@ -2,7 +2,10 @@ from typing import Literal
 from collections.abc import Callable
 
 from .indicators import Indicator, BoolIndicator, StrIndicator
-from .input_commands import recolor, change_theme, new_seed, regenerate, toggle_solve, toggle_theme, exit_prog
+from .input_commands import (
+    recolor, change_theme, new_seed, regenerate,
+    toggle_solve, toggle_theme, exit_prog,
+)
 
 INPUT_COMMAND = Literal["c", "s", "r", "n", "t", "y", "e"]
 
@@ -13,13 +16,13 @@ class Command:
         name: str,
         description: str,
         input: INPUT_COMMAND,
-        func: Callable[..., None],
+        func: Callable[[], bool],
         indicator: Indicator | None = None,
     ) -> None:
         self.name: str = name.upper()
         self.description: str = description
         self.input: INPUT_COMMAND = input
-        self.func: Callable[..., None] = func
+        self.func: Callable[[], bool] = func
         self.indicator = indicator
         return
 

@@ -17,7 +17,7 @@ class NumericalDrawer(Drawer):
             for x, px in enumerate(row):
                 if y == 0 or y == len(buffer) - 1:
                     px.char = str(x + 1)[-1]
-                elif x == 0 or x == len(row) - 1 :
+                elif x == 0 or x == len(row) - 1:
                     px.char = str(y + 1)[-1]
                 px.fg_clr = self.fg_clr
                 px.bg_clr = self.bg_clr

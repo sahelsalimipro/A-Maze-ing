@@ -7,8 +7,10 @@ from ..dirs import DIRS, OPP_DIR, Direction
 if TYPE_CHECKING:
     from random import Random
 
+
 def carvable(t: BaseTile | None) -> TypeGuard[BaseTile]:
     return t is not None and not t.isLimit and not t.isLogo
+
 
 def carve(tile: BaseTile, d: Direction) -> None:
     """Opens the wall between tile and its neighbour d."""
@@ -20,6 +22,7 @@ def carve(tile: BaseTile, d: Direction) -> None:
     tile.wallscount -= 1
     other.wallscount -= 1
 
+
 def uncarve(tile: BaseTile, d: Direction) -> None:
     """Close the wall between tile and its neighbour d (undo carve)."""
 
@@ -30,11 +33,13 @@ def uncarve(tile: BaseTile, d: Direction) -> None:
     tile.wallscount += 1
     other.wallscount += 1
 
+
 def find_components(
     grid: list[list[BaseTile]],
 ) -> tuple[list[list[BaseTile]], dict[BaseTile, int]]:
-    """Connected groups of carvable tiles (walls ignored), computed in one pass.
-    Returns (components, component_of): the tiles of each component, and tile -> component index.
+    """Connected groups of carvable tiles (walls ignored), computed in one
+    pass. Returns (components, component_of): the tiles of each component,
+    and tile -> component index.
     Grid order makes it deterministic."""
     components: list[list[BaseTile]] = []
     component_of: dict[BaseTile, int] = {}
@@ -51,7 +56,8 @@ def find_components(
                 cur = queue.popleft()
                 for d in DIRS:
                     nxt = cur.neighbours[d]
-                    if nxt is not None and carvable(nxt) and nxt not in component_of:
+                    if (nxt is not None and carvable(nxt)
+                            and nxt not in component_of):
                         component_of[nxt] = idx
                         members.append(nxt)
                         queue.append(nxt)
@@ -62,6 +68,7 @@ def find_components(
 # \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 # |                   BRAIDING                                 >
 # /////////////////////////////////////////////////////////////
+
 
 def braid(rng: Random, cells: list[BaseTile]) -> None:
     """Remove every dead end without creating any 2x2 open area.
@@ -78,9 +85,12 @@ def braid(rng: Random, cells: list[BaseTile]) -> None:
         if not dead:
             return
         t = rng.choice(dead)
-        closed: list[Direction] = [d for d in DIRS if t.walls[d] and carvable(t.neighbours[d])]
-        joins: list[Direction] = [d for d in closed if _is_dead_end(t.neighbours[d])]
-        d: Direction = rng.choice(joins or closed)     # prefer joining two dead ends
+        closed: list[Direction] = [
+            d for d in DIRS if t.walls[d] and carvable(t.neighbours[d])]
+        joins: list[Direction] = [
+            d for d in closed if _is_dead_end(t.neighbours[d])]
+        # prefer joining two dead ends
+        d: Direction = rng.choice(joins or closed)
         n = t.neighbours[d]
         assert n is not None
         carve(t, d)

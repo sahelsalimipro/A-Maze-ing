@@ -20,10 +20,11 @@ from .commands import Command
 class MenuRenderingCtx:
 
     labels: tuple[str, ...] = ("Press:", "Name:", "Indicator:", "Description:")
-    label_w: int = max(len(l) for l in labels)
+    label_w: int = max(len(lbl) for lbl in labels)
     margin: int = 1
     text_x: int = margin + label_w + 1          # where every value starts
-    min_text_w: int = 10                        # below this, wrapping is pointless
+    # below this, wrapping is pointless
+    min_text_w: int = 10
     block_gap: int = 1                          # blank lines between commands
 
 
@@ -51,7 +52,9 @@ def _wrap(text: str, width: int) -> tuple[str, ...]:
     return tuple(textwrap.wrap(text, width, break_long_words=True)) or ("",)
 
 
-def compute_menu_layout(commands: tuple[Command, ...], width: int) -> MenuLayout:
+def compute_menu_layout(
+    commands: tuple[Command, ...], width: int
+) -> MenuLayout:
     text_w = width - MenuRenderingCtx.text_x - MenuRenderingCtx.margin
     if text_w < MenuRenderingCtx.min_text_w:
         raise ValueError(f"Terminal too narrow for the menu ({width} columns)")

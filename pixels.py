@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Literal
 
 PixelKind = Literal["content", "wall", "junction", "empty", "logo"]
@@ -6,12 +5,12 @@ PixelKind = Literal["content", "wall", "junction", "empty", "logo"]
 
 class Pixel:
     def __init__(
-            self,
-            char: str=" ",
-            fg_clr: tuple[int, int, int] | None = None,
-            bg_clr: tuple[int, int, int] | None = None,
-            kind: PixelKind = "empty"
-        ) -> None:
+        self,
+        char: str = " ",
+        fg_clr: tuple[int, int, int] | None = None,
+        bg_clr: tuple[int, int, int] | None = None,
+        kind: PixelKind = "empty"
+    ) -> None:
 
         self.char: str = char
         self.fg_clr: tuple[int, int, int] | None = fg_clr

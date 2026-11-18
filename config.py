@@ -87,8 +87,11 @@ def parse_color(raw: str) -> tuple[int, int, int] | None:
     return (r, g, b)
 
 # ---------- Per-type checkers ---------- #
+
+
 def _is_int(v: Any) -> bool:
     return isinstance(v, int) and not isinstance(v, bool)   # True is an int!
+
 
 def check_int(v: Any) -> int:
     if not _is_int(v):
@@ -97,10 +100,12 @@ def check_int(v: Any) -> int:
         raise ValueError(f"expected >= 0, got {v}")
     return int(v)
 
+
 def check_bool(v: Any) -> bool:
     if not isinstance(v, bool):
         raise ValueError(f"expected bool, got {v!r}")
     return v
+
 
 def check_color(v: Any) -> tuple[int, int, int] | None:
     if v is None:
@@ -110,15 +115,18 @@ def check_color(v: Any) -> tuple[int, int, int] | None:
         raise ValueError(f"expected None or (r,g,b) in 0-255, got {v!r}")
     return (v[0], v[1], v[2])
 
+
 def check_str(v: Any) -> str:
     if not isinstance(v, str) or not v:
         raise ValueError(f"expected str with min_len = 1, got {v!r}")
     return v
 
+
 def check_char(v: Any) -> str:
     if not isinstance(v, str) or len(v) != 1:
         raise ValueError(f"expected exactly 1 character, got {v!r}")
     return v
+
 
 def check_coord(v: Any) -> tuple[int, int] | None:
     if v is None:
@@ -127,6 +135,7 @@ def check_coord(v: Any) -> tuple[int, int] | None:
             and all(_is_int(c) and c >= 0 for c in v)):
         raise ValueError(f"expected None or (x, y) with x, y >= 0, got {v!r}")
     return (v[0], v[1])
+
 
 def check_ratio(v: Any) -> tuple[int, int]:
     if not (isinstance(v, (tuple, list)) and len(v) == 2
@@ -142,13 +151,14 @@ class FieldType:
     check: Callable[[Any], Any]
 
 
-BOOL  = FieldType(parse_bool,  check_bool)
-INT   = FieldType(parse_int,   check_int)
-STR   = FieldType(parse_str,   check_str)
-CHAR  = FieldType(parse_char,  check_char)
+BOOL = FieldType(parse_bool,  check_bool)
+INT = FieldType(parse_int,   check_int)
+STR = FieldType(parse_str,   check_str)
+CHAR = FieldType(parse_char,  check_char)
 COORD = FieldType(parse_coord, check_coord)
 COLOR = FieldType(parse_color, check_color)
 RATIO = FieldType(parse_ratio, check_ratio)
+
 
 @dataclass
 class FieldSpec:
@@ -156,7 +166,8 @@ class FieldSpec:
     type: FieldType
     default: Any
     themeable: bool = True
-    # True: bad/missing value aborts startup. False: log a warning + fall back to default.
+    # True: bad/missing value aborts startup.
+    # False: log a warning + fall back to default.
     critical: bool = False
 
     def parse(self, raw: str) -> Any:        # .env only
@@ -219,10 +230,13 @@ FIELDS: list[FieldSpec] = [
 
 SPECS: dict[str, FieldSpec] = {f.key: f for f in FIELDS}
 
+
 class Settings(Mapping[str, Any]):
     """Read-only for consumers. Lookup order: runtime > theme > base."""
 
-    def __init__(self, base: dict[str, Any], specs: Mapping[str, FieldSpec]) -> None:
+    def __init__(
+        self, base: dict[str, Any], specs: Mapping[str, FieldSpec]
+    ) -> None:
         self._specs = specs
         self._theme: dict[str, Any] = {}
         self._runtime: dict[str, Any] = {}

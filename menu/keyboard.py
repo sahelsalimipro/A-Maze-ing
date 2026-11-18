@@ -56,7 +56,8 @@ else:
         fd = sys.stdin.fileno()
         if sys.stdin.isatty():
             _saved = termios.tcgetattr(fd)
-            tty.setcbreak(fd)           # no line buffering, no echo; Ctrl-C works
+            # no line buffering, no echo; Ctrl-C works
+            tty.setcbreak(fd)
         # No O_NONBLOCK here: stdin and stdout are usually the same open file
         # description, so it would make every stdout write able to fail with
         # EAGAIN ("write could not complete without blocking") whenever the

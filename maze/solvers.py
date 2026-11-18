@@ -23,7 +23,8 @@ def astar(start: BaseTile, goal: BaseTile) -> list[BaseTile] | None:
                 node = came[node]
             return path[::-1]
 
-        if cur in closed:            # stale duplicate entry from an earlier push
+        # stale duplicate entry from an earlier push
+        if cur in closed:
             continue
         closed.add(cur)
 
@@ -37,6 +38,7 @@ def astar(start: BaseTile, goal: BaseTile) -> list[BaseTile] | None:
                 came[nxt] = cur
                 heapq.heappush(open_, (c + h(nxt), nxt))
     return None
+
 
 def bfs(start: BaseTile, goal: BaseTile) -> list[BaseTile] | None:
     """Return the shortest path from start to goal, or None if unreachable.

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from drawers import EmptyDrawer, MenuDrawer
 from ._drawers import BaseDrawer, BannerDrawer, DefaultMazeDrawer
@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 def register(config: Settings, maze: Maze) -> dict[str, Drawer]:
 
-    xtr, xtl = None, None
-
+    xtl: Drawer
+    xtr: Drawer
     if config["EXPAND_COLOR_TO_FULL_TERMINAL"]:
         xtl = BaseDrawer("LEFT_PADDING_CLR")
         xtr = BaseDrawer("RIGHT_PADDING_CLR")

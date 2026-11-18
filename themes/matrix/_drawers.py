@@ -40,7 +40,8 @@ QUOTE_HOLD = 10     # rows a quote stays fully readable once completely written
 
 # ---------- Palette ---------- #
 HEAD: RGB = (190, 255, 205)
-TRAIL: tuple[RGB, ...] = ((0, 255, 70), (0, 200, 55), (0, 140, 38), (0, 80, 24))
+TRAIL: tuple[RGB, ...] = ((0, 255, 70), (0, 200, 55),
+                          (0, 140, 38), (0, 80, 24))
 
 QUOTE_HEAD: RGB = (225, 255, 235)
 QUOTE_BODY: RGB = (110, 255, 150)
@@ -61,9 +62,10 @@ def _noop(x: int, y: int) -> None:
 class RainStyle:
     speed: tuple[float, float]                  # rows per second
     length: tuple[int, int]                     # trail length, in rows
-    delay: tuple[float, float]                  # idle seconds between 2 streams
+    # idle seconds between 2 streams
+    delay: tuple[float, float]
     brightness: float                           # 0..1, scales the palette
-    flicker: float                              # glyph changes / column / second
+    flicker: float      # glyph changes / column / second
     quote_every: tuple[float, float] | None     # seconds between quotes
 
 

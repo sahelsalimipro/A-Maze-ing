@@ -10,17 +10,22 @@ Coord = tuple[int, int]
 
 
 def _hint(label: str) -> str:
-    return f"Pick other coordinates, or set {label} to NONE to let the program choose it."
+    return (f"Pick other coordinates, or set {label} to NONE "
+            "to let the program choose it.")
+
 
 def _coord(t: BaseTile) -> Coord:
     """Returns grid -> config coordinates"""
     return (t.x - 1, t.y - 1)
 
+
 def _on_border(maze: Maze, t: BaseTile) -> bool:
     return t.x in (1, maze.width) or t.y in (1, maze.height)
 
+
 def _prefer_border(maze: Maze, tiles: list[BaseTile]) -> list[BaseTile]:
     return [t for t in tiles if _on_border(maze, t)] or tiles
+
 
 def _resolve(maze: Maze, coord: Coord | None, label: str) -> BaseTile | None:
     """None stays None. Anything given is validated, never corrected."""
@@ -32,15 +37,18 @@ def _resolve(maze: Maze, coord: Coord | None, label: str) -> BaseTile | None:
             f"{label} {coord} is outside the maze "
             f"(x: 0-{maze.width - 1}, y: 0-{maze.height - 1}). {_hint(label)}"
         )
-    tile = maze.grid[y + 1][x + 1]          # +1: Limit ring; grid is [row][col]
+    # +1: Limit ring; grid is [row][col]
+    tile = maze.grid[y + 1][x + 1]
     if tile.isLogo:
         raise MazeErr(f"{label} {coord} is on a logo tile. {_hint(label)}")
     return tile
 
 
 def _pick_near(maze: Maze, anchor: BaseTile, label: str) -> BaseTile:
-    """Pick the missing endpoint in the anchor's component (border preferred)."""
-    others = [t for t in maze.components[maze.component_of[anchor]] if t is not anchor]
+    """Pick the missing endpoint in the anchor's component
+    (border preferred)."""
+    others = [t for t in maze.components[maze.component_of[anchor]]
+              if t is not anchor]
     if not others:
         raise MazeErr(
             f"{label} {_coord(anchor)} is isolated by the logo: no other tile "
@@ -52,7 +60,8 @@ def _pick_near(maze: Maze, anchor: BaseTile, label: str) -> BaseTile:
 def pick_endpoints(
     maze: Maze, entry: Coord | None, exit_: Coord | None
 ) -> tuple[BaseTile, BaseTile]:
-    """Returns (start, goal). Given coordinates are validated, never corrected."""
+    """Returns (start, goal).
+    Given coordinates are validated, never corrected."""
     start = _resolve(maze, entry, "ENTRY")
     goal = _resolve(maze, exit_, "EXIT")
 
@@ -64,8 +73,9 @@ def pick_endpoints(
             )
         if maze.component_of[start] != maze.component_of[goal]:
             raise MazeErr(
-                f"ENTRY {_coord(start)} and EXIT {_coord(goal)} are not connected "
-                f"(the logo separates them). Move one, or set one of them to NONE."
+                f"ENTRY {_coord(start)} and EXIT {_coord(goal)} are not "
+                "connected (the logo separates them). "
+                "Move one, or set one of them to NONE."
             )
         return start, goal
 
@@ -75,7 +85,8 @@ def pick_endpoints(
     if goal is not None:                     # ENTRY missing
         return _pick_near(maze, goal, "EXIT"), goal
 
-    # Neither given: start in the biggest component so we never land in a pocket
+    # Neither given: start in the biggest component
+    # so we never land in a pocket
     main = max(maze.components, key=len)     # ties: first one, deterministic
     start = maze._rng.choice(_prefer_border(maze, main))
     return start, _pick_near(maze, start, "ENTRY")

@@ -162,12 +162,15 @@ class MazeDrawer(Drawer):
         self._draw_markers(buffer)
         return
 
-    def _fill_junctions(self, buffer: list[list[Pixel]], ct_rows: int, ct_cols: int) -> None:
+    def _fill_junctions(
+        self, buffer: list[list[Pixel]], ct_rows: int, ct_cols: int
+    ) -> None:
         ratio_x, ratio_y = self.ratio
         buf_h, buf_w = len(buffer), len(buffer[0])
 
         def is_wall(y: int, x: int) -> bool:
-            return 0 <= y < buf_h and 0 <= x < buf_w and buffer[y][x].kind == "wall"
+            return (0 <= y < buf_h and 0 <= x < buf_w
+                    and buffer[y][x].kind == "wall")
 
         for r in range(ct_rows + 1):
             y = r * (ratio_y + 1)
@@ -194,7 +197,8 @@ class MazeDrawer(Drawer):
             (self.maze._start, self._start_char),
             (self.maze._goal,  self._goal_char),
         ):
-            # Grid coords include the Limit ring, the buffer doesn't: subtract 1
+            # Grid coords include the Limit ring, the buffer doesn't:
+            # subtract 1
             cx = _scale(tile.x - 1, ratio_x)
             cy = _scale(tile.y - 1, ratio_y)
             px = buffer[cy + mid_y][cx + mid_x]

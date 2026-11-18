@@ -1,5 +1,6 @@
 import logging
 
+
 def setup_logging(log_path: str = "amazeing.log") -> None:
     logging.basicConfig(
         filename=log_path,

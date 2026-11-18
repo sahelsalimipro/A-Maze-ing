@@ -39,11 +39,11 @@ def logo_cells(
 
 class Maze():
     def __init__(
-            self, width, height,
-            seed=None, perfect=True,
-            entry=None, exit=None,
-            carver="dfs", solver="bfs"
-        ) -> None:
+        self, width, height,
+        seed=None, perfect=True,
+        entry=None, exit=None,
+        carver="dfs", solver="bfs"
+    ) -> None:
 
         self.dimensions = width, height
         self.width = width
@@ -56,7 +56,6 @@ class Maze():
         self.grid = self._build_grid()
         self.components, self.component_of = find_components(self.grid)
         self._rng = Random(self.seed)
-        
 
         start, goal = entry, exit
         self._start, self._goal = pick_endpoints(self, start, goal)

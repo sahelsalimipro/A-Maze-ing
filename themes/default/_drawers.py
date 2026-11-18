@@ -9,7 +9,8 @@ from config import Settings
 class BaseDrawer(Drawer):
 
     def __init__(self, bg_clr_key: str) -> None:
-        """bg_clr_key: config key of the background color, e.g. "TOP_PADDING_CLR".
+        """bg_clr_key: config key of the background color,
+        e.g. "TOP_PADDING_CLR".
         Looked up at draw() time so runtime recolors are picked up."""
         self._bg_clr_key = bg_clr_key
         return
@@ -22,28 +23,29 @@ class BaseDrawer(Drawer):
         return
 
     def update(
-                self,
-                buffer: list[list[Pixel]],
-                dt: float,
-                mark: Callable[[int, int], None]
-            ) -> None:
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return
+
 
 class BannerDrawer(Drawer):
 
     def __init__(self, config: Settings) -> None:
         self._title = config["BANNER_TITLE"]
         self._borders = {
-            "top"    : config["BANNER_TOP_CHAR"],
-            "bottom" : config["BANNER_BOT_CHAR"],
-            "left"   : config["BANNER_LEFT_CHAR"],
-            "right"  : config["BANNER_RIGHT_CHAR"]
+            "top": config["BANNER_TOP_CHAR"],
+            "bottom": config["BANNER_BOT_CHAR"],
+            "left": config["BANNER_LEFT_CHAR"],
+            "right": config["BANNER_RIGHT_CHAR"]
         }
         self._corners = {
-            "top-left"      : config["BANNER_CORNER_TOPLEFT_CHAR"],
-            "top-right"     : config["BANNER_CORNER_TOPRIGHT_CHAR"],
-            "bottom-left"   : config["BANNER_CORNER_BOTLEFT_CHAR"],
-            "bottom-right"  : config["BANNER_CORNER_BOTRIGHT_CHAR"],
+            "top-left": config["BANNER_CORNER_TOPLEFT_CHAR"],
+            "top-right": config["BANNER_CORNER_TOPRIGHT_CHAR"],
+            "bottom-left": config["BANNER_CORNER_BOTLEFT_CHAR"],
+            "bottom-right": config["BANNER_CORNER_BOTRIGHT_CHAR"],
         }
         return
 
@@ -66,13 +68,13 @@ class BannerDrawer(Drawer):
                       self._corners["top-left"] +
                       _fill_sequence(self._borders["top"], width - 2) +
                       self._corners["top-right"]
-                    )
+                      )
 
         self._set_row(buffer[-1],
                       self._corners["bottom-left"] +
                       _fill_sequence(self._borders["bottom"], width - 2) +
                       self._corners["bottom-right"]
-                    )
+                      )
 
         inner_rows = buffer[1:-1]
         left_col = _fill_sequence(self._borders["left"], len(inner_rows))
@@ -103,21 +105,22 @@ class BannerDrawer(Drawer):
         return
 
     def update(
-                self,
-                buffer: list[list[Pixel]],
-                dt: float,
-                mark: Callable[[int, int], None]
-            ) -> None:
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return
+
 
 class DefaultMazeDrawer(MazeDrawer):
     def draw(self, buffer: list[list[Pixel]], config: Settings) -> None:
         return super().draw(buffer, config)
 
     def update(
-                self,
-                buffer: list[list[Pixel]],
-                dt: float,
-                mark: Callable[[int, int], None]
-            ) -> None:
+        self,
+        buffer: list[list[Pixel]],
+        dt: float,
+        mark: Callable[[int, int], None]
+    ) -> None:
         return super().update(buffer, dt, mark)

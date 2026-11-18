@@ -2,9 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Callable
 
 from pixels import Pixel
-from .utils import _center
-from menu import compute_menu_layout, Command, MenuLayout, COMMANDS, MenuRenderingCtx
+from menu import (
+    compute_menu_layout, Command, MenuLayout, MenuRenderingCtx
+)
 from config import Settings
+
 
 class Drawer(ABC):
 

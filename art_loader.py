@@ -84,7 +84,7 @@ def load_art(data: bytes) -> ArtData:
         offset += 3
 
     pixel_count = width * height
-    indices = data[offset : offset + pixel_count]
+    indices = data[offset: offset + pixel_count]
     if len(indices) != pixel_count:
         raise ValueError(
             f"truncated pxart file: expected {pixel_count} pixel bytes, "

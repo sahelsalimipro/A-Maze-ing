@@ -76,12 +76,14 @@ def validate(config: Settings) -> None:
 
     if carver != "dfs" and carver != "wilson":
         raise ConfigErr(
-            f"Invalid carver provided: {carver!r}. Valid carvers are: 'dfs', 'wilson'."
+            f"Invalid carver provided: {carver!r}. "
+            "Valid carvers are: 'dfs', 'wilson'."
         )
 
     if solver != "bfs" and solver != "astar":
         raise ConfigErr(
-            f"Invalid solver provided: {solver!r}. Valid solvers are: 'bfs', 'astar'."
+            f"Invalid solver provided: {solver!r}. "
+            "Valid solvers are: 'bfs', 'astar'."
         )
 
     # Theme name: validated by themes_loader.activate_theme(), which runs

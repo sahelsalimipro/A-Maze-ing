@@ -8,11 +8,14 @@ if TYPE_CHECKING:
     from .amazeing import Maze
 
 # ---------- Generating IDs ---------- #
+
+
 def id_gen() -> Generator[str]:
     id = 0
     while True:
         id += 1
         yield str(id)
+
 
 ID_GEN = id_gen()
 
@@ -47,7 +50,7 @@ class BaseTile(ABC):
         self.coords = coords
         self.x = coords[0]
         self.y = coords[1]
-        self.neighbours = { dir: None for dir in DIRS }
+        self.neighbours = {dir: None for dir in DIRS}
         self.wallscount = 0
         self._set_walls()
 
@@ -69,7 +72,7 @@ class Tile(BaseTile):
         return f"[Tile {self.id} - x:{self.x} y:{self.y}]"
 
     def _set_walls(self) -> None:
-        self.walls = { dir : True for dir in DIRS }
+        self.walls = {dir: True for dir in DIRS}
         self.wallscount = sum(self.walls.values())
 
     def goto(self, direction: Direction) -> BaseTile | Literal[False]:
@@ -109,9 +112,9 @@ class Limit(BaseTile):
 
         self.wallscount = sum(self.walls.values())
 
-
     def goto(self, direction: Direction) -> BaseTile | Literal[False]:
         raise InvalidTileErr(self, "Navigation from limit forbidden")
+
 
 class LogoTile(BaseTile):
     def __str__(self) -> str:
@@ -123,7 +126,7 @@ class LogoTile(BaseTile):
         super().__init__(coords, maze)
 
     def _set_walls(self) -> None:
-        self.walls = { d : True for d in DIRS }
+        self.walls = {d: True for d in DIRS}
         self.wallscount = 4
 
     def goto(self, direction: Direction) -> BaseTile | Literal[False]:

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .tiles import BaseTile
 
+
 class InvalidTileErr(ValueError):
 
     def __init__(
@@ -20,5 +21,5 @@ class InvalidTileErr(ValueError):
 
 class MazeErr(Exception):
 
-    def __init__(self, msg: str="Unkown error"):
+    def __init__(self, msg: str = "Unkown error"):
         super().__init__(f"Maze Error: {msg}")
