@@ -104,6 +104,32 @@ class Maze():
         _wire_neighbours(rows)
         return rows
 
+    def __repr__(self) -> str:
+        """ASCII view: S/E = entry/exit, . = solution, # = logo."""
+        lines: list[str] = []
+        for row in self.grid[1:-1]:
+            cells = row[1:-1]
+            lines.append("".join(
+                "+--" if t.walls["N"] else "+  " for t in cells) + "+")
+            line = ""
+            for t in cells:
+                if t is self._start:
+                    mark = "S"
+                elif t is self._goal:
+                    mark = "E"
+                elif t.isLogo:
+                    mark = "#"
+                elif t.isSolution:
+                    mark = "."
+                else:
+                    mark = " "
+                line += ("|" if t.walls["W"] else " ") + mark + " "
+            lines.append(line + ("|" if cells[-1].walls["E"] else " "))
+        lines.append("".join(
+            "+--" if t.walls["S"] else "+  "
+            for t in self.grid[-2][1:-1]) + "+")
+        return "\n".join(lines)
+
     def _carve(self, algo: Callable[[Maze, BaseTile, bool], None]) -> None:
         return algo(self, self._start, self.is_perfect)
 
