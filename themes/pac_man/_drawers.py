@@ -59,10 +59,14 @@ class PacManDrawer(Drawer):
         return
 
     def _wall(self, idx: int, buffer: list[list[Pixel]]) -> None:
-        pass
+        for px in buffer[idx]:
+            px.bg_clr = COLORS.bg_clr
+            # TODO finish this func
 
     def _draw_balls(self, idx: int, buffer: list[list[Pixel]]) -> None:
         for i, px in enumerate(buffer[idx]):
-            if i % 3 == 0:
-                pass
-        pass
+            px.bg_clr = COLORS.bg_clr
+            if i % 3 == 1:
+                px.char = "⬤"
+                px.fg_clr = COLORS.ball_clr
+        return
